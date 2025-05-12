@@ -19,7 +19,7 @@ Target: NUCLEO-F411RE
 1. Clone
 
 ```
-git clone 
+git clone git@github.com:GIYura/nucleo.git 
 ```
 
 2. Create local **.config** file based on defalut.config
@@ -33,6 +33,12 @@ make clean
 make
 ```
 
+5. Run help
+
+```
+make help
+```
+
 ### Debug
 
 In order to debug target run the following:
@@ -41,7 +47,7 @@ In order to debug target run the following:
 | Command                                 | Desription                |
 |-----------------------------------------|---------------------------|
 | make ocd                                | run open ocd server       |
-| arm-none-eabi-gdb                       | run gdb client            |
+| make gdb                                | run gdb client            |
 | target remote localhost:3333            | connect to the target     |
 | monitor reset init                      | reset the target          |
 | monitor flash write_image erase </.elf> | flash target with .elf    |
