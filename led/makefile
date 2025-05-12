@@ -46,7 +46,15 @@ SZ = $(GCC_PATH)/$(PREFIX)size
 #######################
 # CFLAGS
 #######################
-CFLAGS = -mcpu=$(CPU) -mthumb -std=$(STANDARD) -g $(OPT) -MP -MMD -Wall
+CFLAGS = -mcpu=$(CPU) \
+         -mthumb \
+         -std=$(STANDARD) \
+         -g $(OPT)\
+         -MP \
+         -MMD \
+         -Wall \
+         -ffunction-sections \
+         -fdata-sections
 
 #######################
 # List of directories
@@ -100,6 +108,7 @@ RM = rm -rf
 #######################
 # LDFLAGS (linker flags)
 # NOTE: use newlib-nano link to libc_nano.a
+# NOTE: --gc-sections - garbage collection (delete unused data and functions)
 #######################
 LDFLAGS = -T $(LINKER_SCRIPT) -Xlinker --gc-sections -Xlinker \
   -Map="$(TARGET).map" --specs=nano.specs -u _print_float -Wl,--print-memory-usage -o $(TARGET).elf
@@ -136,19 +145,32 @@ $(OBJDIR)/%.o: %.s
 
 .PHONY: all clean
 
-clean:
+clean: ## 'clean'
 	@echo 'Cleaning...Done!'
 	@$(RM) $(OBJDIR) $(BUILD)
 
 # Run open OCD server
-ocd:
+ocd: ## Run 'ocd' server
+	@echo 'OCD running!'
 	$(OCD_PATH)/openocd -f $(BOARD_CFG)
 
 # Run GDB client
-gdb:
-	$(GCC_PATH)/$(PREFIX)gdb
+gdb: ## Debug over 'gdb'
+	@echo 'GDB running!'
+	#$(GCC_PATH)/$(PREFIX)gdb
+	$(GCC_PATH)/$(PREFIX)gdb $(BUILD)/$(LED).elf
+
+# Load /.elf to the target
+flash: $(BUILD)/$(LED).elf ## 'flash' .elf to target over st-link
+	@echo 'Flash running!'
+	st-flash write $(BUILD)/$(LED).elf 0x8000000
 	
+help: ## 'help'
+	@echo "Available targets:"
+	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
+
 #debug:
+#	@echo $(GCC_PATH)/$(PREFIX)gdb
 #	@echo 'DIR:' $(DIRS)
 #	@echo 'SRC:' $(SRC)
 #	@echo 'INC:' $(INC)
