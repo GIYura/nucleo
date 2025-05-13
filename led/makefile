@@ -111,13 +111,13 @@ RM = rm -rf
 # NOTE: --gc-sections - garbage collection (delete unused data and functions)
 #######################
 LDFLAGS = -T $(LINKER_SCRIPT) -Xlinker --gc-sections -Xlinker \
-  -Map="$(TARGET).map" --specs=nano.specs -u _print_float -Wl,--print-memory-usage -o $(TARGET).elf
+  -Map=$(TARGET).map --specs=nano.specs -u _print_float -Wl,--print-memory-usage -o $(TARGET).elf
 
 #######################
 # Default action: build all
 #######################
 all: $(TARGET)
-$(TARGET): $(EXEC)
+$(TARGET): $(EXEC) $(TARGET).bin
 
 $(EXEC): $(OBJS)
 	@mkdir -p $(@D)
@@ -137,6 +137,12 @@ $(OBJDIR)/%.o: %.s
 	@echo '> Building ASM file $<'
 	@mkdir -p $(dir $@)
 	$(AS) $(CFLAGS) -c $< -o $@
+	
+$(TARGET).bin: $(TARGET).elf
+	@echo '> Building bin file from $<'
+	@mkdir -p $(dir $@)
+	$(CP) -O binary $< $@
+	@echo '!!! ====== DONE =======!!!'
 	
 #######################
 # Dependency
@@ -160,13 +166,13 @@ gdb: ## Debug over 'gdb'
 	#$(GCC_PATH)/$(PREFIX)gdb
 	$(GCC_PATH)/$(PREFIX)gdb $(BUILD)/$(LED).elf
 
-# Load /.elf to the target
-flash: $(BUILD)/$(LED).elf ## 'flash' .elf to target over st-link
+# Load .bin to the target
+flash: $(BUILD)/$(LED).bin ## 'flash' .bin to target over st-link
 	@echo 'Flash running!'
-	st-flash write $(BUILD)/$(LED).elf 0x8000000
+	st-flash write $(BUILD)/$(LED).bin 0x8000000
 	
 help: ## 'help'
-	@echo "Available targets:"
+	@echo 'Available targets:'
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
 
 #debug:
