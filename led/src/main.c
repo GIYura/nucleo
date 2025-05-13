@@ -1,6 +1,9 @@
 #include <assert.h>
+
 #include "board.h"
 #include "led.h"
+
+#define DELAY   500000
 
 static void Delay(volatile uint32_t count)
 {
@@ -30,7 +33,7 @@ int main(void)
             Led_Toggle(&m_leds[i]);
         }
 
-        Delay(500000);
+        Delay(DELAY);
     }
 
     return 0;
