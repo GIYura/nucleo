@@ -3,20 +3,13 @@
 #include "board.h"
 #include "led.h"
 
-#define DELAY   500000
-
-static void Delay(volatile uint32_t count)
-{
-    while (count--)
-    {
-        __asm__("nop");
-    }
-}
-
 static Led_t* m_leds;
 
 int main(void)
 {
+    /* setup SysTick 1ms */
+    SysTick_Config(SystemCoreClock / 1000);
+
     m_leds = BoardLedConfig_Get();
 
     assert(m_leds);
@@ -33,7 +26,7 @@ int main(void)
             Led_Toggle(&m_leds[i]);
         }
 
-        Delay(DELAY);
+        DelayMs(200);
     }
 
     return 0;
