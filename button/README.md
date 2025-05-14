@@ -1,6 +1,6 @@
 ### Description
 
-LED blinky
+Button and LED blinky
 
 ### Set up
 
@@ -13,6 +13,7 @@ Target: NUCLEO-F411RE
 | CN7 (37)     | PC3    | Yellow |
 | CN10 (30)    | PB13   | White  |
 | Build-in     | PA5    | Green  |
+| Build-in     | PC13   | Button |
 
 ### Get started
 
