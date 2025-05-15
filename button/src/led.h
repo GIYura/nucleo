@@ -17,6 +17,6 @@ typedef struct
 void Led_Init(const Led_t* const led);
 void Led_On(const Led_t* const led);
 void Led_Off(const Led_t* const led);
-void Led_Toggle(const Led_t* const led);
+void Led_Toggle(void* context);
 
 #endif /* LED_H */

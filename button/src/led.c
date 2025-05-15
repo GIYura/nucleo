@@ -67,7 +67,7 @@ void Led_Off(const Led_t* const led)
     led->port->ODR &= ~(1 << led->pin);
 }
 
-void Led_Toggle(const Led_t* const led)
+void Led_Toggle(void* context)
 {
     m_led.port->ODR ^= (1 << m_led.pin);
 }
