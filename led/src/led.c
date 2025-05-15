@@ -25,7 +25,7 @@ void Led_Init(const Led_t* const led)
     }
     else if (led->port == GPIOH)
     {
-        RCC->AHB1ENR |= RCC_AHB1ENR_GPIOEEN;
+        RCC->AHB1ENR |= RCC_AHB1ENR_GPIOHEN;
     }
     else
     {
@@ -33,15 +33,13 @@ void Led_Init(const Led_t* const led)
     }
 
     /* reset mode control bits */
-    led->port->MODER &= ~(1 << (led->pin * 2));
-    led->port->MODER &= ~(1 << ((led->pin * 2) + 1));
+    led->port->MODER &= ~(0x03 << (led->pin * 2));
 
     /* set gpio as output */
     led->port->MODER |= (1 << (led->pin * 2));
 
     /* no pull-up/down */
-    led->port->PUPDR &= ~(1 << (led->pin * 2));
-    led->port->PUPDR &= ~(1 << ((led->pin * 2) + 1));
+    led->port->PUPDR &= ~(0x03 << (led->pin * 2));
 
     /* set default value */
     if (led->defaultValue)
