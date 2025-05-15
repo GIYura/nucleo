@@ -100,7 +100,7 @@ OPT = -O0
 DEFINES = -DNDEBUG=1 \
           -D$(MCU)
           
-BUTTON = led
+BUTTON = button
 TARGET = $(BUILD)/$(BUTTON)
 EXEC = $(TARGET).elf
 RM = rm -rf
