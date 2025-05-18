@@ -1,6 +1,6 @@
 ### Description
 
-Button and LED blinky
+PWM generation
 
 ### Set up
 
@@ -8,12 +8,9 @@ Target: NUCLEO-F411RE
 
 ### Connection 
 
-| Nucleo pin   | GPIO   | LED    |
+| Nucleo pin   | GPIO   | Signal |
 |--------------|--------|--------|
-| CN7 (37)     | PC3    | Yellow |
-| CN10 (30)    | PB13   | White  |
-| Build-in     | PA5    | Green  |
-| Build-in     | PC13   | Button |
+| CN10 (21)    | PA9    | PWM    |
 
 ### Get started
 
@@ -22,19 +19,20 @@ Target: NUCLEO-F411RE
 ```
 git clone git@github.com:GIYura/nucleo.git 
 ```
+2. Navigate to pwm directory
 
-2. Create local **.config** file based on defalut.config
+3. Create local **.config** file based on defalut.config
 
-3. Edit local **.config** to specify PATH
+4. Edit local **.config** to specify PATH
 
-4. Compile
+5. Compile
 
 ```
 make clean
 make
 ```
 
-5. Run help
+6. Run help
 
 ```
 make help
@@ -93,4 +91,5 @@ make ocd
 ### Notes
 
 [Open OCD commands](https://openocd.org/doc/html/General-Commands.html)
+[Linker script](https://www.opennet.ru/docs/RUS/gnu_ld/gnuld-3.html)
 
