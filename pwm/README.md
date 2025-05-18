@@ -80,6 +80,8 @@ In order to debug target run the following:
 
 7. Startup
 - Initialization commands: monitor reset halt
+- Set breakpoint at: main
+- Select Resume
 
 8. Run Open ocd server
 ```
