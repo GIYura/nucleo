@@ -1,12 +1,12 @@
 #include "pwm.h"
 
-#define DUTY_MAX        9
+#define DUTY_MAX        18
 #define DUTY_DEFAULT    10
 
 static Pwm_t m_pwm = { .port = GPIOA, .pin = 9 };
 static PwmConfig_t m_pwmConfig = { .periodMs = 1000, .duty = DUTY_DEFAULT };
 
-static uint8_t m_duty[DUTY_MAX] = { 10, 20, 30, 40, 50, 60, 70, 80, 90 };
+static uint8_t m_duty[DUTY_MAX] = { 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95 };
 static uint8_t m_dutyIndex = 0;
 
 volatile static uint32_t m_ticks = 0;
@@ -39,7 +39,7 @@ int main(void)
         m_dutyIndex = (m_dutyIndex + 1) % DUTY_MAX;
         Pwm_Config(&m_pwmConfig);
 
-        DelayMs(500);
+        DelayMs(200);
     }
 
     return 0;
