@@ -8,9 +8,10 @@ Target: NUCLEO-F411RE
 
 ### Connection 
 
-| Nucleo pin   | GPIO   | Signal |
-|--------------|--------|--------|
-| CN10 (21)    | PA9    | PWM    |
+| Nucleo pin   | GPIO   | Signal  |
+|--------------|--------|---------|
+| CN10 (21)    | PA9    | LED (+) |
+| CN10 (20)    | GND    | LED (-) |
 
 ### Get started
 
