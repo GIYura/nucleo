@@ -1,7 +1,13 @@
 # local config
 .config
 
+# Output files
 Build/
 Obj/
+
+# Docs
 docs/
+
+# symlink to SDK
+ext/
 
