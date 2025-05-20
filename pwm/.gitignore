@@ -9,5 +9,5 @@ Obj/
 docs/
 
 # symlink to SDK
-ext/
+cmsis/
 
