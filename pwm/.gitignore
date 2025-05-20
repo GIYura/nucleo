@@ -11,3 +11,6 @@ docs/
 # symlink to SDK
 cmsis/
 
+# test output
+ceedling/build
+
