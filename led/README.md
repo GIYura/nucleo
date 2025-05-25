@@ -81,15 +81,8 @@ In order to debug target run the following:
 
 7. Startup
 - Initialization commands: monitor reset halt
+- Set breakpoint at: main
+- Select Resume
 
-8. Run Open ocd server
-```
-make ocd
-```
-
-9. In Eclipse select Debug (F11)
-
-### Notes
-
-[Open OCD commands](https://openocd.org/doc/html/General-Commands.html)
+8. Select Debug (F11)
 
