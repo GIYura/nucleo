@@ -84,15 +84,22 @@ In order to debug target run the following:
 - Set breakpoint at: main
 - Select Resume
 
-8. Run Open ocd server
+8. Select Debug (F11)
+
+### Ceedling
+
+1. Install ruby
+
 ```
-make ocd
+sudo apt install ruby
+ruby --version
 ```
 
-9. In Eclipse select Debug (F11)
+2. Install ceedling
 
-### Notes
-
-[Open OCD commands](https://openocd.org/doc/html/General-Commands.html)
-[Linker script](https://www.opennet.ru/docs/RUS/gnu_ld/gnuld-3.html)
+```
+gem install ceedling
+ceedling --version
+```
+**NOTE:** refer for /docs in the root directory
 
