@@ -1,10 +1,11 @@
 #include "pwm.h"
 
 #define DUTY_MAX        18
-#define DUTY_DEFAULT    10
+#define DUTY_DEFAULT    50      /* % */
+#define FREQ_DEFAULT    5000   /* Hz */
 
 static Pwm_t m_pwm = { .port = GPIOA, .pin = 9 };
-static PwmConfig_t m_pwmConfig = { .periodMs = 1000, .duty = DUTY_DEFAULT };
+static PwmConfig_t m_pwmConfig = { .freqHz = FREQ_DEFAULT, .duty = DUTY_DEFAULT };
 
 static uint8_t m_duty[DUTY_MAX] = { 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95 };
 static uint8_t m_dutyIndex = 0;
