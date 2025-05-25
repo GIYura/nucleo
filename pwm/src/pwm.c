@@ -1,3 +1,11 @@
+#include <assert.h>
+
+/*
+ * NOTE: bring down TIM1 frequency to 1 MHz
+ * */
+#define PRESCALER_VALUE (uint32_t)(((SystemCoreClock) / 1000000) - 1)
+#define TIMER_FREQUENCY (uint32_t)((SystemCoreClock) / (PRESCALER_VALUE + 1))
+
 #include "pwm.h"
 
 /*
@@ -30,13 +38,19 @@ void Pwm_Init(const Pwm_t* const pwm)
     TIM1->EGR |= TIM_EGR_UG;       /* Update generation */
 }
 
+
 void Pwm_Config(const PwmConfig_t* const config)
 {
-    /* TIM1 settings for PWM */
-    TIM1->PSC = 16 - 1;                 /* Prescaler: 16 МHz / 16 = 1 МHz */
-    TIM1->ARR = config->periodMs - 1;   /* Period: 1000 -> freq 1 кHz */
+    assert(config->freqHz > 0);
+    assert(config->duty <= 100);
 
-    TIM1->CCR2 = (config->periodMs * config->duty) / 100;
+    uint32_t period = 0;
+    /* TIM1 settings for PWM */
+    TIM1->PSC = PRESCALER_VALUE;
+    period = (TIMER_FREQUENCY / config->freqHz) - 1;
+    TIM1->ARR = period;
+
+    TIM1->CCR2 = (period * config->duty) / 100;
 }
 
 void Pwm_Start(void)

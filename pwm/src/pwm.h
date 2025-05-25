@@ -11,7 +11,7 @@ typedef struct
 
 typedef struct
 {
-    uint32_t periodMs;
+    uint32_t freqHz;
     uint32_t duty;
 } PwmConfig_t;
 
