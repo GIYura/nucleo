@@ -1,0 +1,16 @@
+# local config
+.config
+
+# Output files
+Build/
+Obj/
+
+# Docs
+docs/
+
+# symlink to SDK
+cmsis/
+
+# test output
+ceedling/build
+
