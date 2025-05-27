@@ -83,6 +83,7 @@ typedef struct
 {
     GPIO_TypeDef* port;
     PIN_NAMES pinName;
+    uint8_t pinIndex;
     PIN_MODES mode;
     PIN_TYPES type;
     PIN_SPEEDS speed;
