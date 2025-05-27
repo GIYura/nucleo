@@ -1,5 +1,5 @@
 ##############################################
-# Makefile to Button control
+# Makefile for GPIO driver
 # Define GCC_PATH (e.g. GCC_PATH=/path/to/gcc/bin) to set compiler path
 # Define SMT32 SDK path (e.g. SDK_PATH=/path/to/stm32/sdk)
 # Define Open OCD path (e.g. OCD_PATH=/path/to/openocd/)
@@ -100,8 +100,8 @@ OPT = -O0
 DEFINES = -DNDEBUG=1 \
           -D$(MCU)
           
-PWM = pwm
-TARGET = $(BUILD)/$(PWM)
+GPIO = gpio
+TARGET = $(BUILD)/$(GPIO)
 EXEC = $(TARGET).elf
 RM = rm -rf
 
@@ -163,13 +163,12 @@ ocd: ## Run 'ocd' server
 # Run GDB client
 gdb: ## Debug over 'gdb'
 	@echo 'GDB running!'
-	#$(GCC_PATH)/$(PREFIX)gdb
-	$(GCC_PATH)/$(PREFIX)gdb $(BUILD)/$(PWM).elf
+	$(GCC_PATH)/$(PREFIX)gdb $(TARGET).elf
 
 # Load .bin to the target
-flash: $(BUILD)/$(PWM).bin ## 'flash' .bin to target over st-link
+flash: $(TARGET).bin ## 'flash' .bin to target over st-link
 	@echo 'Flash running!'
-	st-flash write $(BUILD)/$(PWM).bin 0x8000000
+	st-flash write $(TARGET).bin 0x8000000
 	
 help: ## 'help'
 	@echo 'Available targets:'
