@@ -3,7 +3,7 @@
 
 #include "gpio.h"
 
-void GpioInit(  Gpio_t* obj,
+void GpioInit(  Gpio_t* const obj,
                 PIN_NAMES pinName,
                 PIN_MODES mode,
                 PIN_TYPES type,
@@ -87,7 +87,7 @@ void GpioInit(  Gpio_t* obj,
     }
 }
 
-void GpioWrite(Gpio_t* obj, uint32_t value)
+void GpioWrite(const Gpio_t* const obj, uint32_t value)
 {
     assert(obj != NULL);
 
@@ -106,7 +106,7 @@ void GpioWrite(Gpio_t* obj, uint32_t value)
     }
 }
 
-uint32_t GpioRead(Gpio_t* obj)
+uint32_t GpioRead(const Gpio_t* const obj)
 {
     assert(obj != NULL);
 
@@ -117,7 +117,7 @@ uint32_t GpioRead(Gpio_t* obj)
     return value ? 1 : 0;
 }
 
-void GpioToogle(Gpio_t* obj)
+void GpioToogle(const Gpio_t* const obj)
 {
     assert(obj != NULL);
 
@@ -131,5 +131,103 @@ void GpioToogle(Gpio_t* obj)
     {
         obj->port->BSRR = (1 << (obj->pinIndex));
     }
+}
+
+void GpioSetInterrupt(Gpio_t* obj, PIN_IRQ_MODES irqMode, PIN_IRQ_PRIORITIES irqPriority, GpioIrqHandler* handler)
+{
+    /*TODO:*/
+    if (obj->pinName == NC)
+    {
+        return;
+    }
+
+    assert(handler != NULL);
+
+    IRQn_Type irqNumber = EXTI0_IRQn;
+    uint32_t priority = 0;
+
+    obj->irqHandler = handler;
+
+    switch (irqMode)
+    {
+        case PIN_IRQ_RISING:
+
+            break;
+
+        case PIN_IRQ_FALING:
+
+            break;
+
+        case PIN_IRQ_RISING_FALING:
+
+            break;
+
+        default:
+            break;
+    }
+
+    switch (irqPriority)
+    {
+        case PIN_IRQ_PRIORITY_LOW:
+
+            break;
+
+        case PIN_IRQ_PRIORITY_MEDIUM:
+
+            break;
+
+        case PIN_IRQ_PRIORITY_HIGH:
+
+            break;
+        default:
+            break;
+    }
+
+    switch (obj->pinIndex)
+    {
+        case 0:
+            irqNumber = EXTI0_IRQn;
+            break;
+
+        case 1:
+            irqNumber = EXTI1_IRQn;
+            break;
+
+        case 2:
+            irqNumber = EXTI2_IRQn;
+            break;
+
+        case 3:
+            irqNumber = EXTI4_IRQn;
+            break;
+
+        case 4:
+            irqNumber = EXTI4_IRQn;
+            break;
+
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+            irqNumber = EXTI9_5_IRQn;
+            break;
+
+        case 10:
+        case 11:
+        case 12:
+        case 13:
+        case 14:
+        case 15:
+            irqNumber = EXTI15_10_IRQn;
+            break;
+
+        default:
+            break;
+    }
+
+
+    NVIC_SetPriority(irqNumber, priority);
+    NVIC_EnableIRQ(irqNumber);
 }
 

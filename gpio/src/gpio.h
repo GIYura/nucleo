@@ -63,21 +63,21 @@ typedef enum
 /* pin IRQ mode */
 typedef enum
 {
-    PIN_NO_IRQ = 0,
-    PIN_IRQ_RISING_EDGE,
-    PIN_IRQ_FALLING_EDGE,
-    PIN_IRQ_RISING_FALLING_EDGE
+    PIN_IRQ_NO = 0,
+    PIN_IRQ_RISING,
+    PIN_IRQ_FALING,
+    PIN_IRQ_RISING_FALING,
 } PIN_IRQ_MODES;
 
 /* pin IRQ priority */
 typedef enum
 {
-    PIN_IRQ_VERY_LOW_PRIORITY = 0,
-    PIN_IRQ_LOW_PRIORITY,
-    PIN_IRQ_MEDIUM_PRIORITY,
-    PIN_IRQ_HIGH_PRIORITY,
-    PIN_IRQ_VERY_HIGH_PRIORITY
+    PIN_IRQ_PRIORITY_LOW = 0,
+    PIN_IRQ_PRIORITY_MEDIUM,
+    PIN_IRQ_PRIORITY_HIGH,
 } PIN_IRQ_PRIORITIES;
+
+typedef void (GpioIrqHandler)(void* context);
 
 typedef struct
 {
@@ -88,10 +88,11 @@ typedef struct
     PIN_TYPES type;
     PIN_SPEEDS speed;
     PIN_CONFIGS config;
-    uint32_t altFunc;
+    GpioIrqHandler* irqHandler;
 } Gpio_t;
 
-void GpioInit(  Gpio_t* obj,
+
+void GpioInit(  Gpio_t* const obj,
                 PIN_NAMES pinName,
                 PIN_MODES mode,
                 PIN_TYPES type,
@@ -99,8 +100,9 @@ void GpioInit(  Gpio_t* obj,
                 PIN_CONFIGS config,
                 uint32_t value);
 
-void GpioWrite(Gpio_t* obj, uint32_t value);
-uint32_t GpioRead(Gpio_t* obj);
-void GpioToogle(Gpio_t* obj);
+void GpioWrite(const Gpio_t* const obj, uint32_t value);
+uint32_t GpioRead(const Gpio_t* const obj);
+void GpioToogle(const Gpio_t* const obj);
+void GpioSetInterrupt(Gpio_t* obj, PIN_IRQ_MODES irqMode, PIN_IRQ_PRIORITIES irqPriority, GpioIrqHandler* handler);
 
 #endif /* GPIO_H */
