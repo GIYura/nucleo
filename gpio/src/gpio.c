@@ -117,11 +117,19 @@ uint32_t GpioRead(Gpio_t* obj)
     return value ? 1 : 0;
 }
 
-/*TODO:*/
 void GpioToogle(Gpio_t* obj)
 {
     assert(obj != NULL);
 
-    obj->port->ODR ^= (1 << (obj->pinIndex));
+    uint32_t odr = (obj->port->ODR);
+
+    if (odr & (1 << obj->pinIndex))
+    {
+        obj->port->BSRR = (1 << (obj->pinIndex + 16));
+    }
+    else
+    {
+        obj->port->BSRR = (1 << (obj->pinIndex));
+    }
 }
 
