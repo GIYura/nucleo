@@ -6,7 +6,15 @@ GPIO driver
 
 Target: NUCLEO-F411RE
 
-### Connection 
+### Connection (for test only)
+
+| Nucleo pin   | GPIO   | LED    |
+|--------------|--------|--------|
+| CN7 (37)     | PC3    | Yellow |
+| CN10 (30)    | PB13   | White  |
+| Build-in     | PA5    | Green  |
+| CN7 (28)     | PA0    | Green  |
+| CN7 (30)     | PA1    | Button | 
 
 ### Get started
 
