@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# path to paltform configuration
+# path to platform configuration
 OCD_PATH=~/STM32Toolchain/openocd/bin/openocd
 BOARD_CFG=~/STM32Toolchain/openocd/scripts/board/st_nucleo_f4.cfg
 
@@ -39,12 +39,12 @@ ADDR=${ADDR%:}
 BYTE0=${BYTE0#0x}
 BYTE0=${BYTE0^^}
 
-# extract RDP byte (2 symbols starting from position 6)
+# extract USER byte (2 symbols starting from position 6)
 USER_HEX=${BYTE0:6:2}
 # extract RDP byte (2 symbols starting from position 4)
 RDP_HEX=${BYTE0:4:2}
 
-# convert to hex to dec
+# convert hex to dec
 RDP=$((16#$RDP_HEX))
 
 echo "-----------------------------------"
@@ -65,7 +65,6 @@ fi
 
 echo "-----------------------------------"
 
-USER_HEX=${BYTE0:6:2}
 USER=$((16#$USER_HEX))
 
 echo "USER : 0x$USER_HEX"
