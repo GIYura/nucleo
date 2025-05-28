@@ -27,6 +27,11 @@ static void DelayMs(uint32_t ms)
     while ((m_ticks - start) < ms);
 }
 
+static void OnButton(void* context)
+{
+/*TODO:*/
+}
+
 int main(void)
 {
     SysTick_Config(SystemCoreClock / 1000);
@@ -37,6 +42,7 @@ int main(void)
     GpioInit(&m_leds[WHITE], PB_13, PIN_MODE_OUTPUT, PIN_TYPE_NO_PULL_UP_PULL_DOWN, PIN_SPEED_FAST, PIN_CONFIG_PUSH_PULL, PIN_STATE_HIGH);
 
     GpioInit(&m_button, PA_1, PIN_MODE_INPUT, PIN_TYPE_PULL_UP, PIN_SPEED_HIGH, PIN_CONFIG_PUSH_PULL, 0);
+    GpioSetInterrupt(&m_button, PIN_IRQ_RISING, PIN_IRQ_PRIORITY_HIGH, OnButton);
 
     while (1)
     {
