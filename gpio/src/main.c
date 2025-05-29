@@ -13,7 +13,6 @@ volatile static uint32_t m_ticks = 0;
 
 static Gpio_t m_leds[LED_NUMBER];
 static Gpio_t m_button;
-static uint32_t m_buttonState;
 
 void SysTick_Handler(void)
 {
@@ -27,9 +26,9 @@ static void DelayMs(uint32_t ms)
     while ((m_ticks - start) < ms);
 }
 
-static void OnButton(void* context)
+static void OnButton(void)
 {
-/*TODO:*/
+    GpioToogle(&m_leds[WHITE]);
 }
 
 int main(void)
@@ -39,19 +38,18 @@ int main(void)
     GpioInit(&m_leds[GREEN_INT], PA_5, PIN_MODE_OUTPUT, PIN_TYPE_NO_PULL_UP_PULL_DOWN, PIN_SPEED_FAST, PIN_CONFIG_PUSH_PULL, PIN_STATE_HIGH);
     GpioInit(&m_leds[GREEN_EXT], PA_0, PIN_MODE_OUTPUT, PIN_TYPE_NO_PULL_UP_PULL_DOWN, PIN_SPEED_FAST, PIN_CONFIG_PUSH_PULL, PIN_STATE_HIGH);
     GpioInit(&m_leds[YELLOW], PC_3, PIN_MODE_OUTPUT, PIN_TYPE_NO_PULL_UP_PULL_DOWN, PIN_SPEED_FAST, PIN_CONFIG_PUSH_PULL, PIN_STATE_HIGH);
-    GpioInit(&m_leds[WHITE], PB_13, PIN_MODE_OUTPUT, PIN_TYPE_NO_PULL_UP_PULL_DOWN, PIN_SPEED_FAST, PIN_CONFIG_PUSH_PULL, PIN_STATE_HIGH);
 
-    GpioInit(&m_button, PA_1, PIN_MODE_INPUT, PIN_TYPE_PULL_UP, PIN_SPEED_HIGH, PIN_CONFIG_PUSH_PULL, 0);
-    GpioSetInterrupt(&m_button, PIN_IRQ_RISING, PIN_IRQ_PRIORITY_HIGH, OnButton);
+    GpioInit(&m_leds[WHITE], PB_13, PIN_MODE_OUTPUT, PIN_TYPE_NO_PULL_UP_PULL_DOWN, PIN_SPEED_FAST, PIN_CONFIG_PUSH_PULL, PIN_STATE_LOW);
+
+    GpioInit(&m_button, PC_13, PIN_MODE_INPUT, PIN_TYPE_PULL_UP, PIN_SPEED_HIGH, PIN_CONFIG_PUSH_PULL, 1);
+    GpioSetInterrupt(&m_button, PIN_IRQ_FALING, PIN_IRQ_PRIORITY_HIGH, OnButton);
 
     while (1)
     {
-        for (uint8_t i = 0; i < LED_NUMBER; i++)
+        for (uint8_t i = 0; i < (LED_NUMBER - 1); i++)
         {
             GpioToogle(&m_leds[i]);
         }
-
-        m_buttonState = GpioRead(&m_button);
 
         DelayMs(250);
     }
