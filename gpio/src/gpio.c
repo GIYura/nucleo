@@ -3,6 +3,10 @@
 
 #include "gpio.h"
 
+#define INTERRUP_MAX    16
+
+static Gpio_t* m_GpioIrq[INTERRUP_MAX];
+
 void GpioInit(  Gpio_t* const obj,
                 PIN_NAMES pinName,
                 PIN_MODES mode,
@@ -74,7 +78,7 @@ void GpioInit(  Gpio_t* const obj,
 
     if (mode == PIN_MODE_OUTPUT)
     {
-        obj->port->OTYPER = (config << (obj->pinIndex));
+        obj->port->OTYPER |= (config << (obj->pinIndex));
 
         if (value == PIN_STATE_LOW)
         {
@@ -96,13 +100,13 @@ void GpioWrite(const Gpio_t* const obj, uint32_t value)
         return;
     }
 
-    if (value == 0)
+    if (value)
     {
-        obj->port->BSRR = (1 << (obj->pinIndex + 16));
+        obj->port->BSRR = (1 << (obj->pinIndex));
     }
     else
     {
-        obj->port->BSRR = (1 << (obj->pinIndex));
+        obj->port->BSRR = (1 << (obj->pinIndex + 16));
     }
 }
 
@@ -135,99 +139,200 @@ void GpioToogle(const Gpio_t* const obj)
 
 void GpioSetInterrupt(Gpio_t* obj, PIN_IRQ_MODES irqMode, PIN_IRQ_PRIORITIES irqPriority, GpioIrqHandler* handler)
 {
-    /*TODO:*/
+    assert(obj != NULL);
+    assert(handler != NULL);
+
     if (obj->pinName == NC)
     {
         return;
     }
 
-    assert(handler != NULL);
-
-    IRQn_Type irqNumber = EXTI0_IRQn;
-    uint32_t priority = 0;
+    for (uint8_t i = 0; i < INTERRUP_MAX; i++)
+    {
+        if (m_GpioIrq[i] != NULL && m_GpioIrq[i]->pinIndex == obj->pinIndex)
+        {
+            return;
+        }
+    }
 
     obj->irqHandler = handler;
 
+    /* System configuration controller clock enable */
+    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
+
+    uint8_t extiReg = (obj->pinIndex / 4);
+    uint8_t extiIndex = (obj->pinIndex % 4) * 4;
+    uint8_t extiValue = 0x00;
+    IRQn_Type irqNum = EXTI0_IRQn;
+
+    if ((obj->pinName & 0xF0) == 0x00)
+    {
+        extiValue = 0x00;
+    }
+    else if ((obj->pinName & 0xF0) == 0x10)
+    {
+        extiValue = 0x01;
+    }
+    else if ((obj->pinName & 0xF0) == 0x20)
+    {
+        extiValue = 0x02;
+    }
+    else if ((obj->pinName & 0xF0) == 0x30)
+    {
+        extiValue = 0x03;
+    }
+    else if ((obj->pinName & 0xF0) == 0x40)
+    {
+        extiValue = 0x04;
+    }
+    else if ((obj->pinName & 0xF0) == 0x50)
+    {
+        extiValue = 0x07;
+    }
+
+    /* clear and set */
+    SYSCFG->EXTICR[extiReg] &= ~(0x0F << extiIndex);
+    SYSCFG->EXTICR[extiReg] |= (extiValue << extiIndex);
+
+    /* enable interrupt */
+    EXTI->IMR |= (1 << obj->pinIndex);
+
+    /* edge setup */
     switch (irqMode)
     {
         case PIN_IRQ_RISING:
-
+            EXTI->RTSR |= (1 << obj->pinIndex);
             break;
 
         case PIN_IRQ_FALING:
-
-            break;
-
-        case PIN_IRQ_RISING_FALING:
-
+            EXTI->FTSR |= (1 << obj->pinIndex);
             break;
 
         default:
+            EXTI->RTSR |= (1 << obj->pinIndex);
+            EXTI->FTSR |= (1 << obj->pinIndex);
             break;
     }
 
-    switch (irqPriority)
+    if (obj->pinIndex <= 4)
     {
-        case PIN_IRQ_PRIORITY_LOW:
-
-            break;
-
-        case PIN_IRQ_PRIORITY_MEDIUM:
-
-            break;
-
-        case PIN_IRQ_PRIORITY_HIGH:
-
-            break;
-        default:
-            break;
+        irqNum += obj->pinIndex;
     }
-
-    switch (obj->pinIndex)
+    else if (obj->pinIndex <= 9)
     {
-        case 0:
-            irqNumber = EXTI0_IRQn;
-            break;
-
-        case 1:
-            irqNumber = EXTI1_IRQn;
-            break;
-
-        case 2:
-            irqNumber = EXTI2_IRQn;
-            break;
-
-        case 3:
-            irqNumber = EXTI4_IRQn;
-            break;
-
-        case 4:
-            irqNumber = EXTI4_IRQn;
-            break;
-
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-        case 9:
-            irqNumber = EXTI9_5_IRQn;
-            break;
-
-        case 10:
-        case 11:
-        case 12:
-        case 13:
-        case 14:
-        case 15:
-            irqNumber = EXTI15_10_IRQn;
-            break;
-
-        default:
-            break;
+        irqNum = EXTI9_5_IRQn;
+    }
+    else
+    {
+        irqNum = EXTI15_10_IRQn;
     }
 
+    m_GpioIrq[obj->pinIndex] = obj;
 
-    NVIC_SetPriority(irqNumber, priority);
-    NVIC_EnableIRQ(irqNumber);
+    if (NVIC_GetPendingIRQ(irqNum) != 0)
+    {
+        EXTI->PR |= (1 << obj->pinIndex);
+        NVIC_ClearPendingIRQ(irqNum);
+    }
+
+    NVIC_SetPriority(irqNum, irqPriority);
+    NVIC_EnableIRQ(irqNum);
+}
+
+void EXTI0_IRQHandler(void)
+{
+    if (EXTI->PR & (1 << 0))
+    {
+        EXTI->PR |= (1 << 0);
+
+        if (m_GpioIrq[0]->irqHandler != NULL)
+        {
+            (*m_GpioIrq[0]->irqHandler)();
+        }
+    }
+}
+
+void EXTI1_IRQHandler(void)
+{
+    if (EXTI->PR & (1 << 1))
+    {
+        EXTI->PR |= (1 << 1);
+
+        if (m_GpioIrq[1]->irqHandler != NULL)
+        {
+            (*m_GpioIrq[1]->irqHandler)();
+        }
+    }
+}
+
+void EXTI2_IRQHandler(void)
+{
+    if (EXTI->PR & (1 << 2))
+    {
+        EXTI->PR |= (1 << 2);
+
+        if (m_GpioIrq[2]->irqHandler != NULL)
+        {
+            (*m_GpioIrq[2]->irqHandler)();
+        }
+    }
+}
+
+void EXTI3_IRQHandler(void)
+{
+    if (EXTI->PR & (1 << 3))
+    {
+        EXTI->PR |= (1 << 3);
+
+        if (m_GpioIrq[3]->irqHandler != NULL)
+        {
+            (*m_GpioIrq[3]->irqHandler)();
+        }
+    }
+}
+
+void EXTI4_IRQHandler(void)
+{
+    if (EXTI->PR & (1 << 4))
+    {
+        EXTI->PR |= (1 << 4);
+
+        if (m_GpioIrq[4]->irqHandler != NULL)
+        {
+            (*m_GpioIrq[4]->irqHandler)();
+        }
+    }
+}
+
+void EXTI9_5_IRQHandler(void)
+{
+    for (uint8_t i = 5; i <= 9; i++)
+    {
+        if (EXTI->PR & (1 << i))
+        {
+            EXTI->PR |= (1 << i);
+
+            if (m_GpioIrq[i]->irqHandler != NULL)
+            {
+                (*m_GpioIrq[i]->irqHandler)();
+            }
+        }
+    }
+}
+
+void EXTI15_10_IRQHandler(void)
+{
+    for (uint8_t i = 10; i <= 15; i++)
+    {
+        if (EXTI->PR & (1 << i))
+        {
+            EXTI->PR |= (1 << i);
+
+            if (m_GpioIrq[i]->irqHandler != NULL)
+            {
+                (*m_GpioIrq[i]->irqHandler)();
+            }
+        }
+    }
 }
 

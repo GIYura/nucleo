@@ -72,12 +72,12 @@ typedef enum
 /* pin IRQ priority */
 typedef enum
 {
-    PIN_IRQ_PRIORITY_LOW = 0,
+    PIN_IRQ_PRIORITY_HIGH = 3,
     PIN_IRQ_PRIORITY_MEDIUM,
-    PIN_IRQ_PRIORITY_HIGH,
+    PIN_IRQ_PRIORITY_LOW,
 } PIN_IRQ_PRIORITIES;
 
-typedef void (GpioIrqHandler)(void* context);
+typedef void (GpioIrqHandler)(void);
 
 typedef struct
 {
@@ -90,7 +90,6 @@ typedef struct
     PIN_CONFIGS config;
     GpioIrqHandler* irqHandler;
 } Gpio_t;
-
 
 void GpioInit(  Gpio_t* const obj,
                 PIN_NAMES pinName,
