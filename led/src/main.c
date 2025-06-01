@@ -1,32 +1,21 @@
-#include <assert.h>
-
-#include "board.h"
 #include "led.h"
-
-static Led_t* m_leds;
+#include "delay.h"
 
 int main(void)
 {
-    /* setup SysTick 1ms */
-    SysTick_Config(SystemCoreClock / 1000);
-
-    m_leds = BoardLedConfig_Get();
-
-    assert(m_leds);
-
-    for (uint8_t i = 0; i < LED_MAX; i++)
-    {
-        Led_Init(&m_leds[i]);
-    }
+    LedInit(LED_GREEN, PA_5);
+    LedInit(LED_GREEN_EXT, PA_0);
+    LedInit(LED_YELLOW, PC_3);
+    LedInit(LED_WHITE, PB_13);
 
     while (1)
     {
-        for (uint8_t i = 0; i < LED_MAX; i++)
-        {
-            Led_Toggle(&m_leds[i]);
-        }
+        LedToggle(LED_GREEN);
+        LedToggle(LED_YELLOW);
+        LedToggle(LED_WHITE);
+        LedToggle(LED_GREEN_EXT);
 
-        DelayMs(200);
+        DelayMs(250);
     }
 
     return 0;

@@ -1,22 +1,20 @@
 #ifndef LED_H
 #define LED_H
 
-#include <stdint.h>
-#include <stdbool.h>
+#include "gpio-name.h"
 
-#include "stm32f411xe.h"
-
-typedef struct
+typedef enum
 {
-    const char* name;
-    GPIO_TypeDef* port;
-    uint8_t pin;
-    bool defaultValue;
-} Led_t;
+    LED_GREEN = 0,
+    LED_YELLOW,
+    LED_WHITE,
+    LED_GREEN_EXT,
+    LED_COUNT,
+} LED_IDs;
 
-void Led_Init(const Led_t* const led);
-void Led_On(const Led_t* const led);
-void Led_Off(const Led_t* const led);
-void Led_Toggle(const Led_t* const led);
+void LedInit(LED_IDs id, PIN_NAMES gpioName);
+void LedOn(LED_IDs id);
+void LedOff(LED_IDs id);
+void LedToggle(LED_IDs id);
 
 #endif /* LED_H */
