@@ -20,6 +20,7 @@ endif
 #######################
 # Source directory
 #######################
+SHARED = submodules/nucleo-shared
 STM32_DRIVERS = $(SDK_PATH)/Drivers
 SRCDIR = src
 
@@ -63,6 +64,8 @@ DIRS = $(STM32_DRIVERS)/CMSIS/Device/ST/STM32F4xx/Include \
        $(STM32_DRIVERS)/CMSIS/Include \
        $(SRCDIR) \
        $(SRCDIR)/hal/stm32f4xx \
+       $(SHARED)/delay \
+       $(SHARED)/gpio \
        
 #######################
 # List of source files (.c)

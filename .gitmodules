@@ -1,0 +1,3 @@
+[submodule "led/submodules/nucleo-shared"]
+	path = led/submodules/nucleo-shared
+	url = git@github.com:GIYura/nucleo-shared.git
