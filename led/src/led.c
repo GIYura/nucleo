@@ -31,5 +31,5 @@ void LedToggle(LED_IDs id)
 {
     assert(id < LED_COUNT);
 
-    GpioToogle(&m_leds[id]);
+    GpioToggle(&m_leds[id]);
 }
