@@ -20,6 +20,7 @@ endif
 #######################
 # Source directory
 #######################
+SHARED = submodules/nucleo-shared
 STM32_DRIVERS = $(SDK_PATH)/Drivers
 SRCDIR = src
 
@@ -63,6 +64,8 @@ DIRS = $(STM32_DRIVERS)/CMSIS/Device/ST/STM32F4xx/Include \
        $(STM32_DRIVERS)/CMSIS/Include \
        $(SRCDIR) \
        $(SRCDIR)/hal/stm32f4xx \
+       $(SHARED)/delay \
+       $(SHARED)/gpio \
        
 #######################
 # List of source files (.c)
@@ -164,12 +167,12 @@ ocd: ## Run 'ocd' server
 gdb: ## Debug over 'gdb'
 	@echo 'GDB running!'
 	#$(GCC_PATH)/$(PREFIX)gdb
-	$(GCC_PATH)/$(PREFIX)gdb $(BUILD)/$(BUTTON).elf
+	$(GCC_PATH)/$(PREFIX)gdb $(TARGET).elf
 
 # Load .bin to the target
-flash: $(BUILD)/$(BUTTON).bin ## 'flash' .bin to target over st-link
+flash: $(TARGET).bin ## 'flash' .bin to target over st-link
 	@echo 'Flash running!'
-	st-flash write $(BUILD)/$(BUTTON).bin 0x8000000
+	st-flash write $(TARGET).bin 0x8000000
 	
 help: ## 'help'
 	@echo 'Available targets:'
