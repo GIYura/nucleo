@@ -1,77 +1,41 @@
+#include <assert.h>
 #include <stddef.h>
 
 #include "button.h"
+#include "gpio.h"
+
+#define BUTTON_DEBOUNCE_TIME    20     /* ms */
+
+static Gpio_t m_buttons[BUTTON_COUNT];
 
 static ButtonEventHandler m_onButton = NULL;
 
-static volatile bool m_buttonDebouncePending = false;
+static void OnButtonEvent(void);
+static void DebounceTimerInit(uint32_t timeoutMs);
+static void DebounceTimerStart(void);
 
-static void DebounceTimer_Init(uint32_t timeoutMs);
-static void DebounceTimer_Start(void);
-
-void Button_Init(const Button_t* const button)
+void ButtonInit(BUTTON_IDs id, PIN_NAMES gpioName)
 {
-    if (button->port == GPIOA)
-    {
-        RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
-    }
-    else if (button->port == GPIOB)
-    {
-        RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;
-    }
-    else if (button->port == GPIOC)
-    {
-        RCC->AHB1ENR |= RCC_AHB1ENR_GPIOCEN;
-    }
-    else if (button->port == GPIOD)
-    {
-        RCC->AHB1ENR |= RCC_AHB1ENR_GPIODEN;
-    }
-    else if (button->port == GPIOE)
-    {
-        RCC->AHB1ENR |= RCC_AHB1ENR_GPIOEEN;
-    }
-    else if (button->port == GPIOH)
-    {
-        RCC->AHB1ENR |= RCC_AHB1ENR_GPIOHEN;
-    }
-    else
-    {
-        return;
-    }
+    assert(id < BUTTON_COUNT);
 
-    /* System configuration controller clock enabled */
-    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
+    GpioInit(&m_buttons[id], gpioName, PIN_MODE_INPUT, PIN_TYPE_PULL_UP, PIN_SPEED_HIGH, PIN_CONFIG_PUSH_PULL, 1);
 
-    /* set gpio as input */
-    button->port->MODER &= ~(0x03 << button->pin * 2);
+    GpioSetInterrupt(&m_buttons[id], PIN_IRQ_FALING, PIN_IRQ_PRIORITY_HIGH, OnButtonEvent);
 
-    /* pull-up enabled */
-    button->port->PUPDR &= ~(0x03 << (button->pin * 2));
-    button->port->PUPDR |= (0x01 << (button->pin * 2));
-
-    DebounceTimer_Init(button->debounceTimeout);
+    DebounceTimerInit(BUTTON_DEBOUNCE_TIME);
 }
 
-void Button_RegisterPressHandler(const Button_t* const button, ButtonEventHandler callback)
+static void OnButtonEvent(void)
 {
-    /* set EXTI13 on PC13 */
-    SYSCFG->EXTICR[3] &= ~SYSCFG_EXTICR4_EXTI13;
-    SYSCFG->EXTICR[3] |= SYSCFG_EXTICR4_EXTI13_PC;
+    DebounceTimerStart();
+}
 
-    /* Interrupt request from line 13 is not masked */
-    EXTI->IMR |= EXTI_IMR_IM13;
-
-    /* Falling trigger enabled (for Event and Interrupt) for input line */
-    EXTI->FTSR |= EXTI_FTSR_TR13;
-
-    NVIC_EnableIRQ(EXTI15_10_IRQn);
-    NVIC_SetPriority(EXTI15_10_IRQn, 2);
-
+void ButtonRegisterPressHandler(ButtonEventHandler callback)
+{
     m_onButton = callback;
 }
 
-static void DebounceTimer_Init(uint32_t timeoutMs)
+static void DebounceTimerInit(uint32_t timeoutMs)
 {
     RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
 
@@ -91,29 +55,12 @@ static void DebounceTimer_Init(uint32_t timeoutMs)
     NVIC_SetPriority(TIM2_IRQn, 1);
 }
 
-static void DebounceTimer_Start(void)
+static void DebounceTimerStart(void)
 {
     TIM2->CNT = 0;
 
     /* Counter enabled */
     TIM2->CR1 |= TIM_CR1_CEN;
-}
-
-void EXTI15_10_IRQHandler(void)
-{
-    /* selected trigger request occurred */
-    if (EXTI->PR & EXTI_PR_PR13)
-    {
-        /*read-clear-write-1 */
-        EXTI->PR = EXTI_PR_PR13;
-
-        if (!m_buttonDebouncePending)
-        {
-            m_buttonDebouncePending = true;
-
-            DebounceTimer_Start();
-        }
-    }
 }
 
 void TIM2_IRQHandler(void)
@@ -126,9 +73,7 @@ void TIM2_IRQHandler(void)
 
         if (m_onButton != NULL)
         {
-            (*m_onButton)(NULL);
+            (*m_onButton)();
         }
-        m_buttonDebouncePending = false;
     }
 }
-

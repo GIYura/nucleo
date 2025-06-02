@@ -1,22 +1,17 @@
 #ifndef BUTTON_H
 #define BUTTON_H
 
-#include <stdint.h>
-#include <stdbool.h>
+#include "gpio-name.h"
 
-#include "stm32f411xe.h"
+typedef void (*ButtonEventHandler)(void);
 
-typedef void (*ButtonEventHandler)(void* context);
-
-typedef struct
+typedef enum
 {
-    const char* name;
-    GPIO_TypeDef* port;
-    uint8_t pin;
-    uint32_t debounceTimeout;
-} Button_t;
+    BUTTON_INTERNAL = 0,
+    BUTTON_COUNT
+} BUTTON_IDs;
 
-void Button_Init(const Button_t* const button);
-void Button_RegisterPressHandler(const Button_t* const button, ButtonEventHandler callback);
+void ButtonInit(BUTTON_IDs id, PIN_NAMES gpioName);
+void ButtonRegisterPressHandler(ButtonEventHandler callback);
 
 #endif /* BUTTON_H */
