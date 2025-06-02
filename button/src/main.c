@@ -1,18 +1,18 @@
+#include <stdint.h>
+
 #include "button.h"
-#include "led.h"
 
-#define BUTTON_DEBOUNCE_TIME    20     /* ms */
+static uint32_t m_buttonPressCounter = 0;
 
-static Button_t m_button = { "USER", .port = GPIOC, .pin = 13, .debounceTimeout = BUTTON_DEBOUNCE_TIME };
-static Led_t m_led = { "WHITE", .port = GPIOB, .pin = 13, .defaultValue = 0 };
+static void OnButton(void)
+{
+    ++m_buttonPressCounter;
+}
 
 int main(void)
 {
-    Led_Init(&m_led);
-
-    Button_Init(&m_button);
-
-    Button_RegisterPressHandler(&m_button, Led_Toggle);
+    ButtonInit(BUTTON_INTERNAL, PC_13);
+    ButtonRegisterPressHandler(OnButton);
 
     while (1);
 
