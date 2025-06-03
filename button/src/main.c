@@ -2,6 +2,8 @@
 
 #include "button.h"
 
+static Button_t m_button;
+
 static uint32_t m_buttonPressCounter = 0;
 
 static void OnButton(void)
@@ -11,7 +13,7 @@ static void OnButton(void)
 
 int main(void)
 {
-    ButtonInit(BUTTON_INTERNAL, PC_13);
+    ButtonInit(&m_button, PC_13);
     ButtonRegisterPressHandler(OnButton);
 
     while (1);

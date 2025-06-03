@@ -2,11 +2,10 @@
 #include <stddef.h>
 
 #include "button.h"
-#include "gpio.h"
 
 #define BUTTON_DEBOUNCE_TIME    20     /* ms */
 
-static Gpio_t m_buttons[BUTTON_COUNT];
+static Gpio_t m_button;
 
 static ButtonEventHandler m_onButton = NULL;
 
@@ -14,25 +13,27 @@ static void OnButtonEvent(void);
 static void DebounceTimerInit(uint32_t timeoutMs);
 static void DebounceTimerStart(void);
 
-void ButtonInit(BUTTON_IDs id, PIN_NAMES gpioName)
+void ButtonInit(Button_t* button, PIN_NAMES gpioName)
 {
-    assert(id < BUTTON_COUNT);
+    assert(button != NULL);
 
-    GpioInit(&m_buttons[id], gpioName, PIN_MODE_INPUT, PIN_TYPE_PULL_UP, PIN_SPEED_HIGH, PIN_CONFIG_PUSH_PULL, 1);
+    button->gpio = &m_button;
 
-    GpioSetInterrupt(&m_buttons[id], PIN_IRQ_FALING, PIN_IRQ_PRIORITY_HIGH, OnButtonEvent);
+    GpioInit(button->gpio, gpioName, PIN_MODE_INPUT, PIN_TYPE_PULL_UP, PIN_SPEED_HIGH, PIN_CONFIG_PUSH_PULL, 1);
+
+    GpioSetInterrupt(button->gpio, PIN_IRQ_FALING, PIN_IRQ_PRIORITY_HIGH, OnButtonEvent);
 
     DebounceTimerInit(BUTTON_DEBOUNCE_TIME);
-}
-
-static void OnButtonEvent(void)
-{
-    DebounceTimerStart();
 }
 
 void ButtonRegisterPressHandler(ButtonEventHandler callback)
 {
     m_onButton = callback;
+}
+
+static void OnButtonEvent(void)
+{
+    DebounceTimerStart();
 }
 
 static void DebounceTimerInit(uint32_t timeoutMs)
