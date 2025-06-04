@@ -1,5 +1,5 @@
 ##############################################
-# Makefile to Button control
+# Makefile to generate PWM
 # Define GCC_PATH (e.g. GCC_PATH=/path/to/gcc/bin) to set compiler path
 # Define SMT32 SDK path (e.g. SDK_PATH=/path/to/stm32/sdk)
 # Define Open OCD path (e.g. OCD_PATH=/path/to/openocd/)
@@ -20,6 +20,7 @@ endif
 #######################
 # Source directory
 #######################
+SHARED = submodules/nucleo-shared
 STM32_DRIVERS = $(SDK_PATH)/Drivers
 SRCDIR = src
 
@@ -63,6 +64,8 @@ DIRS = $(STM32_DRIVERS)/CMSIS/Device/ST/STM32F4xx/Include \
        $(STM32_DRIVERS)/CMSIS/Include \
        $(SRCDIR) \
        $(SRCDIR)/hal/stm32f4xx \
+       $(SHARED)/gpio \
+       $(SHARED)/delay \
        
 #######################
 # List of source files (.c)
@@ -164,12 +167,12 @@ ocd: ## Run 'ocd' server
 gdb: ## Debug over 'gdb'
 	@echo 'GDB running!'
 	#$(GCC_PATH)/$(PREFIX)gdb
-	$(GCC_PATH)/$(PREFIX)gdb $(BUILD)/$(PWM).elf
+	$(GCC_PATH)/$(PREFIX)gdb $(TARGET).elf
 
 # Load .bin to the target
-flash: $(BUILD)/$(PWM).bin ## 'flash' .bin to target over st-link
+flash: $(TARGET).bin ## 'flash' .bin to target over st-link
 	@echo 'Flash running!'
-	st-flash write $(BUILD)/$(PWM).bin 0x8000000
+	st-flash write $(TARGET).bin 0x8000000
 	
 help: ## 'help'
 	@echo 'Available targets:'

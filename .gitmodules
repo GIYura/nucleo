@@ -4,3 +4,6 @@
 [submodule "button/submodules/nucleo-shared"]
 	path = button/submodules/nucleo-shared
 	url = git@github.com:GIYura/nucleo-shared.git
+[submodule "pwm/submodules/nucleo-shared"]
+	path = pwm/submodules/nucleo-shared
+	url = git@github.com:GIYura/nucleo-shared.git
