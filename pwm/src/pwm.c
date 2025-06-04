@@ -1,4 +1,8 @@
 #include <assert.h>
+#include <stddef.h>
+
+#include "stm32f411xe.h"
+#include "pwm.h"
 
 /*
  * NOTE: bring down TIM1 frequency to 1 MHz
@@ -6,40 +10,22 @@
 #define PRESCALER_VALUE (uint32_t)(((SystemCoreClock) / 1000000) - 1)
 #define TIMER_FREQUENCY (uint32_t)((SystemCoreClock) / (PRESCALER_VALUE + 1))
 
-#include "pwm.h"
+static Gpio_t m_gpio;
 
-/*
- * NOTE: Table 9. Alternate function mapping
- * GPIO PA9 TIM1_CH2 AF01
- * */
+static void TimerInit(void);
 
-void Pwm_Init(const Pwm_t* const pwm)
+void PwmInit(PwmGpio_t* const gpio, PIN_NAMES pinName)
 {
-    /* Enable GPIOA and TIM1 clock */
-    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
-    RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;
+    assert(gpio != NULL);
 
-    /* PA 9 AF mode */
-    pwm->port->MODER &= ~(3 << (pwm->pin * 2));
-    pwm->port->MODER |= (2 << (pwm->pin * 2));
+    gpio->gpio = &m_gpio;
 
-    /* GPIO alternate function AF1 */
-    pwm->port->AFR[1] &= ~(0xF << ((pwm->pin - 8) * 4));
-    pwm->port->AFR[1] |=  (1 << ((pwm->pin - 8) * 4));
+    GpioInit(gpio->gpio, pinName, PIN_MODE_ALTERNATE, PIN_TYPE_NO_PULL_UP_PULL_DOWN, PIN_SPEED_FAST, PIN_CONFIG_PUSH_PULL, PIN_AF_1);
 
-    TIM1->CCMR1 &= ~TIM_CCMR1_OC2M;
-    TIM1->CCMR1 |= (6 << TIM_CCMR1_OC2M_Pos);  /* PWM mode 1 */
-    TIM1->CCMR1 |= TIM_CCMR1_OC2PE;            /* Output Compare 2 preload enable */
-
-    TIM1->CCER |= TIM_CCER_CC2E;   /* Capture/Compare 2 output enable */
-
-    TIM1->BDTR |= TIM_BDTR_MOE;    /* Main output enable */
-    TIM1->CR1 |= TIM_CR1_ARPE;     /* Auto-reload preload enable */
-    TIM1->EGR |= TIM_EGR_UG;       /* Update generation */
+    TimerInit();
 }
 
-
-void Pwm_Config(const PwmConfig_t* const config)
+void PwmConfig(const PwmConfig_t* const config)
 {
     assert(config->freqHz > 0);
     assert(config->duty <= 100);
@@ -53,12 +39,26 @@ void Pwm_Config(const PwmConfig_t* const config)
     TIM1->CCR2 = (period * config->duty) / 100;
 }
 
-void Pwm_Start(void)
+void PwmStart(void)
 {
     TIM1->CR1 |= TIM_CR1_CEN;
 }
 
-void Pwm_Stop(void)
+void PwmStop(void)
 {
     TIM1->CR1 &= ~TIM_CR1_CEN;
+}
+
+static void TimerInit(void)
+{
+    RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;
+    TIM1->CCMR1 &= ~TIM_CCMR1_OC2M;
+    TIM1->CCMR1 |= (6 << TIM_CCMR1_OC2M_Pos);  /* PWM mode 1 */
+    TIM1->CCMR1 |= TIM_CCMR1_OC2PE;            /* Output Compare 2 preload enable */
+
+    TIM1->CCER |= TIM_CCER_CC2E;   /* Capture/Compare 2 output enable */
+
+    TIM1->BDTR |= TIM_BDTR_MOE;    /* Main output enable */
+    TIM1->CR1 |= TIM_CR1_ARPE;     /* Auto-reload preload enable */
+    TIM1->EGR |= TIM_EGR_UG;       /* Update generation */
 }
