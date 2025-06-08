@@ -7,3 +7,6 @@
 [submodule "pwm/submodules/nucleo-shared"]
 	path = pwm/submodules/nucleo-shared
 	url = git@github.com:GIYura/nucleo-shared.git
+[submodule "led-abstraction/submodules/nucleo-shared"]
+	path = led-abstraction/submodules/nucleo-shared
+	url = git@github.com:GIYura/nucleo-shared.git
