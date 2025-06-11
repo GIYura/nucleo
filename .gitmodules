@@ -10,3 +10,6 @@
 [submodule "led-abstraction/submodules/nucleo-shared"]
 	path = led-abstraction/submodules/nucleo-shared
 	url = git@github.com:GIYura/nucleo-shared.git
+[submodule "serial/submodules/nucleo-shared"]
+	path = serial/submodules/nucleo-shared
+	url = git@github.com:GIYura/nucleo-shared.git
