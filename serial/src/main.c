@@ -2,7 +2,8 @@
 #include "delay.h"
 #include "uart.h"
 
-static uint8_t m_bufferTx[] = {1,2,3,4};
+static char m_bufferTx[] = "Hello\r\n";
+static Usart_t m_usart;
 
 int main(void)
 {
@@ -16,11 +17,11 @@ int main(void)
     LogError("Error message\r\n");
 #endif
 
-    UartInit();
+    UartInit(&m_usart, BAUD_921600);
 
     while (1)
     {
-        UartWrite(m_bufferTx, sizeof(m_bufferTx));
+        UartWrite(&m_usart, m_bufferTx);
 
         DelayMs(1000);
     }
