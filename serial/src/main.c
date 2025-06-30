@@ -5,8 +5,10 @@
 #include "uart.h"
 
 static char m_messageUart1[] = "Hello STM32F411 Nucleo board over UART-1\r\n";
+static char m_messageUart6[] = "Hello STM32F411 Nucleo board over UART-6\r\n";
 
 static Uart_t m_uart1;
+static Uart_t m_uart6;
 
 int main(void)
 {
@@ -21,10 +23,12 @@ int main(void)
 #endif
 
     UartInit(&m_uart1, UART_1, BAUD_921600);
+    UartInit(&m_uart6, UART_6, BAUD_921600);
 
     while (1)
     {
         UartWrite(&m_uart1, (uint8_t*)m_messageUart1, strlen(m_messageUart1));
+        UartWrite(&m_uart6, (uint8_t*)m_messageUart6, strlen(m_messageUart6));
     }
 
     return 0;
