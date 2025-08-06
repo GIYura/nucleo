@@ -1,0 +1,9 @@
+[submodule "led/submodules"]
+	path = led/submodules
+	url = https://github.com/GIYura/nucleo-shared
+[submodule "button/submodules"]
+	path = button/submodules
+	url = https://github.com/GIYura/nucleo-shared
+[submodule "serial/submodules"]
+	path = serial/submodules
+	url = https://github.com/GIYura/nucleo-shared
