@@ -1,0 +1,21 @@
+[submodule "serial/nucleo-shared"]
+	path = serial/nucleo-shared
+	url = https://github.com/GIYura/nucleo-shared
+[submodule "accel/nucleo-shared"]
+	path = accel/nucleo-shared
+	url = https://github.com/GIYura/nucleo-shared
+[submodule "button/nucleo-shared"]
+	path = button/nucleo-shared
+	url = https://github.com/GIYura/nucleo-shared
+[submodule "led/nucleo-shared"]
+	path = led/nucleo-shared
+	url = https://github.com/GIYura/nucleo-shared
+[submodule "led-abstraction/nucleo-shared"]
+	path = led-abstraction/nucleo-shared
+	url = https://github.com/GIYura/nucleo-shared
+[submodule "mpu/nucleo-shared"]
+	path = mpu/nucleo-shared
+	url = https://github.com/GIYura/nucleo-shared
+[submodule "pwm/nucleo-shared"]
+	path = pwm/nucleo-shared
+	url = https://github.com/GIYura/nucleo-shared
