@@ -1,0 +1,39 @@
+:project:
+  :use_exceptions: FALSE
+  :use_test_preprocessor: :all
+  :use_auxiliary_dependencies: TRUE
+  :build_root: build
+  :release_build: TRUE
+  :test_file_prefix: test_
+
+:paths:
+  :test:
+    - test
+  :source:
+    - ../src
+  :include:
+    - ../src
+    - test/support
+    - ../cmsis/Drivers/CMSIS/Device/ST/STM32F4xx/Include
+    - ../cmsis/Drivers/CMSIS/Include
+
+
+:defines:
+  :common: &common_defines
+    - STM32F411xE
+    - UNIT_TEST
+  :test:
+    - *common_defines
+  :test_preprocess:
+    - *common_defines
+
+:tools:
+  :gcc:
+    :executable: gcc
+    :arguments:
+      - -std=c99
+      - -Wall
+      - -Wextra
+      - -Wno-unused-parameter
+      - -Isrc
+      - -DUNIT_TEST
