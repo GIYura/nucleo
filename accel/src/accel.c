@@ -1,23 +1,17 @@
 #include "accel.h"
+#include "adxl345.h"
 
-static void AccelEnable(Accel_t* accel)
+void AccelInit(void)
 {
-    GpioWrite(&accel->cs, 0);
+    ADXL_Init();
 }
 
-void AccelInit(Accel_t* accel)
+void AccelGetId(uint8_t* const id)
 {
-    SpiInit(&accel->spi, SPI_1, CPOL_0, CPHA_0, 4000000);
-
-    GpioInit(&accel->cs, PA_0, PIN_MODE_OUTPUT, PIN_TYPE_NO_PULL_UP_PULL_DOWN, PIN_SPEED_HIGH, PIN_CONFIG_PUSH_PULL, 1);
+    ADXL_GetId(id);
 }
 
-void AccelDetect(Accel_t* accel)
+void AccelDumpRegisters(void)
 {
-    GpioWrite(&accel->cs, 0);
-
-    SpiTransmit()
-
-    GpioWrite(&accel->cs, 1);
+    ADXL_DumpRegisters();
 }
-

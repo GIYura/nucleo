@@ -1,16 +1,10 @@
 #ifndef ACCEL_H
 #define ACCEL_H
 
-#include "spi.h"
-#include "gpio.h"
+#include <stdint.h>
 
-typedef struct
-{
-    Spi_t spi;
-    Gpio_t cs;
-} Accel_t;
-
-void AccelInit(Accel_t* accel);
-void AccelDetect(Accel_t* accel);
+void AccelInit(void);
+void AccelGetId(uint8_t* const id);
+void AccelDumpRegisters(void);
 
 #endif /* ACCEL_H */
