@@ -1,0 +1,95 @@
+#!/bin/bash
+
+# path to platform configuration
+OCD_PATH=~/STM32Toolchain/openocd/bin/openocd
+BOARD_CFG=~/STM32Toolchain/openocd/scripts/board/st_nucleo_f4.cfg
+
+# temp file
+OUT_FILE="option-bytes"
+
+# verify paths
+if [[ ! -f "$OCD_PATH" ]]; then
+    echo -e "Error: File <$OCD_PATH> not found\n"
+    exit 1
+fi
+
+if [[ ! -f "$BOARD_CFG" ]]; then
+    echo -e "Error: File <$BOARD_CFG> not found\n"
+    exit 1
+fi
+
+# read Option Bytes
+$OCD_PATH -f $BOARD_CFG -c "init; mdw 0x1FFFC000 1; shutdown" > "$OUT_FILE" 2>&1
+
+# extract line from the file
+LINE=$(grep "0x1fffc000:" "$OUT_FILE")
+if [[ -z "$LINE" ]]; then
+    echo "Failed to read Option Bytes; Check board connection"
+    rm $OUT_FILE
+    exit 1
+fi
+
+# parse (based on spaces)
+read -r ADDR BYTE0 _ <<< "$LINE"
+
+# remove ':'
+ADDR=${ADDR%:}
+
+# delete '0x' and capitalize
+BYTE0=${BYTE0#0x}
+BYTE0=${BYTE0^^}
+
+# extract USER byte (2 symbols starting from position 6)
+USER_HEX=${BYTE0:6:2}
+# extract RDP byte (2 symbols starting from position 4)
+RDP_HEX=${BYTE0:4:2}
+
+# convert hex to dec
+RDP=$((16#$RDP_HEX))
+
+echo "-----------------------------------"
+echo "Option Bytes at address: $ADDR"
+echo "-----------------------------------"
+echo "RDP : 0x$RDP_HEX"
+
+echo -n "RDP (Read Protection Level): "
+if [[ $RDP -eq 0xAA || $RDP -eq 170 ]]; then
+    echo "Level 0: No read protection"
+elif [[ $RDP -eq 0x00 ]]; then
+    echo "Level 1: Read protection enabled"
+elif [[ $RDP -eq 0xCC || $RDP -eq 204 ]]; then
+    echo "Level 2: Full protection (IRREVERSABLE)"
+else
+    echo "Unknown or custom value"
+fi
+
+echo "-----------------------------------"
+
+USER=$((16#$USER_HEX))
+
+echo "USER : 0x$USER_HEX"
+
+# parse USER
+BOR_BITS=$(( (USER >> 2) & 0x3 ))
+WDG_SW=$(( (USER >> 5) & 0x1 ))
+NRST_STOP=$(( (USER >> 6) & 0x1 ))
+NRST_STDBY=$(( (USER >> 7) & 0x1 ))
+
+# decode BOR level
+echo -n "BOR level: "
+case $BOR_BITS in
+  0) echo "Level 3 (VBOR3)" ;;
+  1) echo "Level 2 (VBOR2)" ;;
+  2) echo "Level 1 (VBOR1)" ;;
+  3) echo "BOR Off (POR/PDR only)" ;;
+esac
+
+# flags
+[[ $WDG_SW -eq 0 ]] && echo "Watchdog: Hardware" || echo "Watchdog: Software"
+[[ $NRST_STOP -eq 0 ]] && echo "nRST_STOP: Reset generated in Stop mode" || echo "nRST_STOP: No reset in Stop mode"
+[[ $NRST_STDBY -eq 0 ]] && echo "nRST_STDBY: Reset generated in Standby mode" || echo "nRST_STDBY: No reset in Standby mode"
+
+echo "-----------------------------------"
+
+rm $OUT_FILE
+
