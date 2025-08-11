@@ -1,6 +1,6 @@
 ### Description
 
-LED blinky
+Accelerometer (ADXL345)
 
 ### Set up
 
@@ -8,11 +8,12 @@ Target: NUCLEO-F411RE
 
 ### Connection 
 
-| Nucleo pin   | GPIO   | LED    |
-|--------------|--------|--------|
-| CN7 (37)     | PC3    | Yellow |
-| CN10 (30)    | PB13   | White  |
-| Build-in     | PA5    | Green  |
+| Nucleo pin   | GPIO        | Accel pin    |
+|--------------|-------------|--------------|
+| CN10 (11)    | PA5 (sck)   | SCL          |
+| CN10 (13)    | PA6 (miso)  | SDO          |
+| CN10 (15)    | PA7 (mosi)  | SDA          |
+| CN7 (26)     | PA0 (cs)    | CS           |
 
 ### Get started
 
