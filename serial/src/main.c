@@ -1,21 +1,30 @@
 #include "logger.h"
 
-static uint32_t m_counter = 0;
+static void AppEnterLowPowerMode(void)
+{
+    while (!LogIdle());
+
+    LogLevel(LOG_LEVEL_INFO);
+
+    LogPrint("%s", "System enters low power mode...");
+
+    while (1);
+
+    /*TODO:*/
+    /*__WFI();*/
+}
 
 int main(void)
 {
-    LogInit(LOG_LEVEL_ERROR);
+    LogInit();
+    LogLevel(LOG_LEVEL_ERROR);
 
     while (1)
     {
         LogPrint("%d %u %x %c %s", -15, 17, 10, 'B', "FAIL");
+        LogPrint("%d %u %x %c %s", -122, 1700, 1000, 'A', "OK");
 
-        LogFlush();
-
-        if (LogIdle())
-        {
-            ++m_counter;
-        }
+        AppEnterLowPowerMode();
     }
 
     return 0;
