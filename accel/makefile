@@ -69,6 +69,9 @@ DIRS = $(STM32_DRIVERS)/CMSIS/Device/ST/STM32F4xx/Include \
        $(SUBMODULES)/spi \
        $(SUBMODULES)/utils \
        $(SUBMODULES)/adxl345 \
+       $(SUBMODULES)/assert \
+       $(SUBMODULES)/buffer \
+       $(SUBMODULES)/event \
        
 #######################
 # List of source files (.c)
