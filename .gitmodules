@@ -1,12 +1,12 @@
 [submodule "led/submodules"]
 	path = led/submodules
-	url = https://github.com/GIYura/nucleo-shared
+	url = git@github.com:GIYura/nucleo-shared.git
 [submodule "button/submodules"]
 	path = button/submodules
-	url = https://github.com/GIYura/nucleo-shared
+	url = git@github.com:GIYura/nucleo-shared.git
 [submodule "serial/submodules"]
 	path = serial/submodules
-	url = https://github.com/GIYura/nucleo-shared
+	url = git@github.com:GIYura/nucleo-shared.git
 [submodule "accel/submodules"]
 	path = accel/submodules
-	url = https://github.com/GIYura/nucleo-shared
+	url = git@github.com:GIYura/nucleo-shared.git
