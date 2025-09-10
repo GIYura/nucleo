@@ -67,6 +67,7 @@ DIRS = $(STM32_DRIVERS)/CMSIS/Device/ST/STM32F4xx/Include \
        $(SUBMODULES)/delay \
        $(SUBMODULES)/gpio \
        $(SUBMODULES)/spi \
+       $(SUBMODULES)/i2c \
        $(SUBMODULES)/utils \
        $(SUBMODULES)/adxl345 \
        $(SUBMODULES)/assert \
