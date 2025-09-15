@@ -4,6 +4,7 @@
 #include "event.h"
 
 static uint8_t m_accelId = 0;
+static uint8_t m_accelThresholdTap = 0;
 static Acceleration_t m_accelVector = {0};
 
 static void OnAccelRegisterRead(void* data, void* context)
@@ -32,6 +33,13 @@ static void OnAccelVectorRead(void* vector, void* context)
 
 int main(void)
 {
+    bool adxlTest = ADXL_SelfTestOverI2C();
+
+    while (1)
+    {
+        DelayMs(10);
+    }
+
     EventQueueInit();
 
     ADXL_Init();
