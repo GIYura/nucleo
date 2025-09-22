@@ -33,7 +33,7 @@ static void OnAccelVectorRead(void* vector, void* context)
 
 int main(void)
 {
-    bool adxlTest = ADXL_SelfTestOverI2C();
+    bool adxlTestOverI2C = ADXL_SelfTestOverI2C();
 
     while (1)
     {
