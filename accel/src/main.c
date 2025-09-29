@@ -1,10 +1,12 @@
+#include <stddef.h>
+
 #include "adxl345.h"
 #include "adxl345-regs.h"
 #include "delay.h"
 #include "event.h"
+#include "ignore.h"
 
 static uint8_t m_accelId = 0;
-static uint8_t m_accelThresholdTap = 0;
 static Acceleration_t m_accelVector = {0};
 
 static void OnAccelRegisterRead(void* data, void* context)
@@ -13,6 +15,16 @@ static void OnAccelRegisterRead(void* data, void* context)
     *pValue = *(uint8_t*)data;
 
     Event_t e = { .type = EVENT_ACCEL_ID_READY, .context = pValue };
+
+    EventQueue_Enqueue(&e);
+}
+
+static void OnAccelRegisterWrite(void* data, void* context)
+{
+    IGNORE(data);
+    IGNORE(context);
+
+    Event_t e = { .type = EVENT_ACCEL_CONFIG_READY, .context = NULL };
 
     EventQueue_Enqueue(&e);
 }
@@ -33,13 +45,14 @@ static void OnAccelVectorRead(void* vector, void* context)
 
 int main(void)
 {
-    bool adxlTestOverI2C = ADXL_SelfTestOverI2C();
+    uint8_t accalPowerControl = 0x08;
+    EventQueueInit();
 
-    while (1)
-    {
-        DelayMs(10);
-    }
+    ADXL_InitI2C();
 
+    ADXL_ReadRegisterAsyncI2C(ADXL345_DEVID, &OnAccelRegisterRead, &m_accelId);
+
+#if 0
     EventQueueInit();
 
     ADXL_Init();
@@ -50,6 +63,7 @@ int main(void)
     ADXL_WriteRegisterAsync(ADXL345_POWER_CTL, &accelMeasure);
 
     ADXL_ReadVectorAsync(ADXL345_DATAX0, &OnAccelVectorRead, &m_accelVector);
+#endif
 
     while (1)
     {
@@ -59,11 +73,20 @@ int main(void)
             switch (e.type)
             {
                 case EVENT_ACCEL_VECTOR_READY:
-                    /*TODO:*/
+                    /* vector is ready to process */
+                    DelayMs(10);
+                    ADXL_ReadVectorAsyncI2C(ADXL345_DATAX0, &OnAccelVectorRead, &m_accelVector);
+                    break;
+
+                case EVENT_ACCEL_CONFIG_READY:
+                    ADXL_ReadVectorAsyncI2C(ADXL345_DATAX0, &OnAccelVectorRead, &m_accelVector);
                     break;
 
                 case EVENT_ACCEL_ID_READY:
-                    /*TODO:*/
+                    if (m_accelId == ADXL345_ID)
+                    {
+                        ADXL_WriteRegisterAsyncI2C(ADXL345_POWER_CTL, &OnAccelRegisterWrite, &accalPowerControl);
+                    }
                     break;
 
                 case EVENT_BUTTON_PRESSED:
@@ -77,8 +100,6 @@ int main(void)
                     break;
             }
         }
-
-        DelayMs(10);
     }
 
     return 0;
