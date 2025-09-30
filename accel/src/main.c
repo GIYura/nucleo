@@ -45,14 +45,15 @@ static void OnAccelVectorRead(void* vector, void* context)
 
 int main(void)
 {
-    uint8_t accalPowerControl = 0x08;
+#if 0
+    uint8_t accelPowerControl = 0x08;
     EventQueueInit();
 
     ADXL_InitI2C();
 
     ADXL_ReadRegisterAsyncI2C(ADXL345_DEVID, &OnAccelRegisterRead, &m_accelId);
 
-#if 0
+#else
     EventQueueInit();
 
     ADXL_Init();
@@ -74,18 +75,23 @@ int main(void)
             {
                 case EVENT_ACCEL_VECTOR_READY:
                     /* vector is ready to process */
-                    DelayMs(10);
+                    DelayMs(1);
+                    while (1);
                     ADXL_ReadVectorAsyncI2C(ADXL345_DATAX0, &OnAccelVectorRead, &m_accelVector);
                     break;
 
                 case EVENT_ACCEL_CONFIG_READY:
+#if 0
                     ADXL_ReadVectorAsyncI2C(ADXL345_DATAX0, &OnAccelVectorRead, &m_accelVector);
+#endif
                     break;
 
                 case EVENT_ACCEL_ID_READY:
                     if (m_accelId == ADXL345_ID)
                     {
-                        ADXL_WriteRegisterAsyncI2C(ADXL345_POWER_CTL, &OnAccelRegisterWrite, &accalPowerControl);
+#if 0
+                        ADXL_WriteRegisterAsyncI2C(ADXL345_POWER_CTL, &OnAccelRegisterWrite, &accelPowerControl);
+#endif
                     }
                     break;
 
