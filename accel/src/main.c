@@ -6,6 +6,12 @@
 #include "event.h"
 #include "ignore.h"
 
+/* NOTE: THESE MACROS USED FOR TEST ONLY
+ * ACTIVATE ON AT A TIME
+ * */
+//#define ADXL_OVER_I2C
+#define ADXL_OVER_SPI
+
 static uint8_t m_accelId = 0;
 static Acceleration_t m_accelVector = {0};
 
@@ -19,6 +25,7 @@ static void OnAccelRegisterRead(void* data, void* context)
     EventQueue_Enqueue(&e);
 }
 
+#ifdef ADXL_OVER_I2C
 static void OnAccelRegisterWrite(void* data, void* context)
 {
     IGNORE(data);
@@ -28,6 +35,7 @@ static void OnAccelRegisterWrite(void* data, void* context)
 
     EventQueue_Enqueue(&e);
 }
+#endif
 
 static void OnAccelVectorRead(void* vector, void* context)
 {
@@ -45,15 +53,16 @@ static void OnAccelVectorRead(void* vector, void* context)
 
 int main(void)
 {
-#if 0
+#ifdef ADXL_OVER_I2C
     uint8_t accelPowerControl = 0x08;
     EventQueueInit();
 
     ADXL_InitI2C();
 
     ADXL_ReadRegisterAsyncI2C(ADXL345_DEVID, &OnAccelRegisterRead, &m_accelId);
+#endif
 
-#else
+#ifdef ADXL_OVER_SPI
     EventQueueInit();
 
     ADXL_Init();
@@ -75,13 +84,17 @@ int main(void)
             {
                 case EVENT_ACCEL_VECTOR_READY:
                     /* vector is ready to process */
+                    while (1);
+#ifdef ADXL_OVER_I2C
+                    ADXL_ReadVectorAsyncI2C(ADXL345_DATAX0, &OnAccelVectorRead, &m_accelVector);
+
                     DelayMs(1);
                     while (1);
-                    ADXL_ReadVectorAsyncI2C(ADXL345_DATAX0, &OnAccelVectorRead, &m_accelVector);
+#endif
                     break;
 
                 case EVENT_ACCEL_CONFIG_READY:
-#if 0
+#ifdef ADXL_OVER_I2C
                     ADXL_ReadVectorAsyncI2C(ADXL345_DATAX0, &OnAccelVectorRead, &m_accelVector);
 #endif
                     break;
@@ -89,7 +102,7 @@ int main(void)
                 case EVENT_ACCEL_ID_READY:
                     if (m_accelId == ADXL345_ID)
                     {
-#if 0
+#ifdef ADXL_OVER_I2C
                         ADXL_WriteRegisterAsyncI2C(ADXL345_POWER_CTL, &OnAccelRegisterWrite, &accelPowerControl);
 #endif
                     }
