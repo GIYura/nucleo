@@ -23,7 +23,6 @@ endif
 SUBMODULES = submodules
 STM32_DRIVERS = $(SDK_PATH)/Drivers
 SRCDIR = src
-OSDIR = freeRTOS
 
 #######################
 # Linker script path
@@ -67,7 +66,7 @@ DIRS = $(STM32_DRIVERS)/CMSIS/Device/ST/STM32F4xx/Include \
        $(STM32_DRIVERS)/CMSIS/Include \
        $(SRCDIR) \
        $(SRCDIR)/hal/stm32f4xx \
-       $(OSDIR) \
+       $(SUBMODULES)/freeRTOS-kernel \
        $(SUBMODULES)/gpio \
        $(SUBMODULES)/delay \
        $(SUBMODULES)/assert \
@@ -108,8 +107,8 @@ OPT = -O0
 DEFINES = -DNDEBUG=1 \
           -D$(MCU)
           
-LED = led
-TARGET = $(BUILD)/$(LED)
+BLINKY = blinky-os
+TARGET = $(BUILD)/$(BLINKY)
 EXEC = $(TARGET).elf
 RM = rm -rf
 

@@ -10,6 +10,6 @@
 [submodule "accel/submodules"]
 	path = accel/submodules
 	url = git@github.com:GIYura/nucleo-shared.git
-[submodule "os/submodules"]
-	path = os/submodules
+[submodule "blinky-os/submodules"]
+	path = blinky-os/submodules
 	url = git@github.com:GIYura/nucleo-shared.git
