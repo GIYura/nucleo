@@ -1,6 +1,6 @@
-#include <assert.h>
 #include <stddef.h>
 
+#include "assert.h"
 #include "button.h"
 
 #define BUTTON_DEBOUNCE_TIME    20     /* ms */
@@ -15,7 +15,7 @@ static void DebounceTimerStart(void);
 
 void ButtonInit(Button_t* button, PIN_NAMES gpioName)
 {
-    assert(button != NULL);
+    ASSERT(button != NULL);
 
     button->gpio = &m_button;
 

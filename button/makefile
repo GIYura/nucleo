@@ -66,6 +66,7 @@ DIRS = $(STM32_DRIVERS)/CMSIS/Device/ST/STM32F4xx/Include \
        $(SRCDIR)/hal/stm32f4xx \
        $(SUBMODULES)/delay \
        $(SUBMODULES)/gpio \
+       $(SUBMODULES)/assert \
        
 #######################
 # List of source files (.c)
