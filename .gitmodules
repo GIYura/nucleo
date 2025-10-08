@@ -13,3 +13,6 @@
 [submodule "blinky-os/submodules"]
 	path = blinky-os/submodules
 	url = git@github.com:GIYura/nucleo-shared.git
+[submodule "button-os/submodules"]
+	path = button-os/submodules
+	url = git@github.com:GIYura/nucleo-shared.git
