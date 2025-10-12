@@ -18,7 +18,7 @@ static void OnButtonEvent(void);
 static void DebounceTimerInit(TIM_TypeDef* const tim, uint32_t timeoutMs);
 static void DebounceTimerStart(TIM_TypeDef* const tim);
 
-static SemaphoreHandle_t m_sem = NULL;
+static SemaphoreHandle_t m_buttonSemaphore = NULL;
 
 static void ButtonTask(void* pvParameters)
 {
@@ -26,7 +26,7 @@ static void ButtonTask(void* pvParameters)
 
     for (;;)
     {
-        if (xSemaphoreTake(m_sem, portMAX_DELAY) == pdTRUE)
+        if (xSemaphoreTake(m_buttonSemaphore, portMAX_DELAY) == pdTRUE)
         {
             if (m_onButton != NULL)
             {
@@ -48,12 +48,12 @@ bool ButtonInit(Button_t* const button, PIN_NAMES gpioName)
 
     DebounceTimerInit(m_debounceTimer, BUTTON_DEBOUNCE_TIME);
 
-    vSemaphoreCreateBinary(m_sem);
+    vSemaphoreCreateBinary(m_buttonSemaphore);
 
-    if (m_sem != NULL)
+    if (m_buttonSemaphore != NULL)
     {
         /* init semaphore */
-        xSemaphoreTake(m_sem, 0);
+        xSemaphoreTake(m_buttonSemaphore, 0);
 
         status = xTaskCreate(ButtonTask, "ButtonTask", 128, NULL, 1, NULL);
     }
@@ -114,7 +114,7 @@ void TIM2_IRQHandler(void)
 
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
-        xSemaphoreGiveFromISR(m_sem, &xHigherPriorityTaskWoken);
+        xSemaphoreGiveFromISR(m_buttonSemaphore, &xHigherPriorityTaskWoken);
 
         if (xHigherPriorityTaskWoken == pdTRUE)
         {

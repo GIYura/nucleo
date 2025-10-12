@@ -6,11 +6,6 @@
 #include "gpio-name.h"
 #include "gpio.h"
 
-#if 0
-Current implementation supports single button. Gpio pin for button statically allocated in button.c.
-This implemantation can be improved by passing gpio object from the caller.
-#endif
-
 typedef void (*ButtonEventHandler)(void);
 
 /* Button definition */
