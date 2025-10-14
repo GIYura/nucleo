@@ -9,8 +9,8 @@
 /* NOTE: THESE MACROS USED FOR TEST ONLY
  * ACTIVATE ON AT A TIME
  * */
-//#define ADXL_OVER_I2C
-#define ADXL_OVER_SPI
+#define ADXL_OVER_I2C
+//#define ADXL_OVER_SPI
 
 static uint8_t m_accelId = 0;
 static Acceleration_t m_accelVector = {0};
@@ -84,7 +84,7 @@ int main(void)
             {
                 case EVENT_ACCEL_VECTOR_READY:
                     /* vector is ready to process */
-                    while (1);
+                    //while (1);
 #ifdef ADXL_OVER_I2C
                     ADXL_ReadVectorAsyncI2C(ADXL345_DATAX0, &OnAccelVectorRead, &m_accelVector);
 
