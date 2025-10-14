@@ -4,5 +4,6 @@
 Build/
 Obj/
 docs/
+logs/
 
 *.txt
