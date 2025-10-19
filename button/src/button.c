@@ -5,25 +5,25 @@
 
 #define BUTTON_DEBOUNCE_TIME    20     /* ms */
 
-static Gpio_t m_button;
+#define TIM_2_CLOCK_ENABLE      (RCC->APB1ENR |= (RCC_APB1ENR_TIM2EN))
 
 static ButtonEventHandler m_onButton = NULL;
 
-static void OnButtonEvent(void);
-static void DebounceTimerInit(uint32_t timeoutMs);
-static void DebounceTimerStart(void);
+static TIM_TypeDef* m_debounceTimer = TIM2;
 
-void ButtonInit(Button_t* button, PIN_NAMES gpioName)
+static void OnButtonEvent(void);
+static void DebounceTimerInit(TIM_TypeDef* const tim, uint32_t timeoutMs);
+static void DebounceTimerStart(TIM_TypeDef* const tim);
+
+void ButtonInit(Button_t* const button, PIN_NAMES gpioName)
 {
     ASSERT(button != NULL);
 
-    button->gpio = &m_button;
+    GpioInit(&button->gpio, gpioName, PIN_MODE_INPUT, PIN_TYPE_PULL_UP, PIN_SPEED_HIGH, PIN_CONFIG_PUSH_PULL, 1);
 
-    GpioInit(button->gpio, gpioName, PIN_MODE_INPUT, PIN_TYPE_PULL_UP, PIN_SPEED_HIGH, PIN_CONFIG_PUSH_PULL, 1);
+    GpioSetInterrupt(&button->gpio, PIN_IRQ_FALING, PIN_IRQ_PRIORITY_HIGH, OnButtonEvent);
 
-    GpioSetInterrupt(button->gpio, PIN_IRQ_FALING, PIN_IRQ_PRIORITY_HIGH, OnButtonEvent);
-
-    DebounceTimerInit(BUTTON_DEBOUNCE_TIME);
+    DebounceTimerInit(m_debounceTimer, BUTTON_DEBOUNCE_TIME);
 }
 
 void ButtonRegisterPressHandler(ButtonEventHandler callback)
@@ -33,35 +33,35 @@ void ButtonRegisterPressHandler(ButtonEventHandler callback)
 
 static void OnButtonEvent(void)
 {
-    DebounceTimerStart();
+    DebounceTimerStart(m_debounceTimer);
 }
 
-static void DebounceTimerInit(uint32_t timeoutMs)
+static void DebounceTimerInit(TIM_TypeDef* const tim, uint32_t timeoutMs)
 {
-    RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
+    TIM_2_CLOCK_ENABLE;
 
     /* Prescaler value 16 Mhz / 16 = 1 khz (1 ms) */
-    TIM2->PSC = 16000 - 1;
+    tim->PSC = 16000 - 1;
 
     /* Auto-reload value */
-    TIM2->ARR = timeoutMs - 1;
+    tim->ARR = timeoutMs - 1;
 
     /* One-pulse mode */
-    TIM2->CR1 |= TIM_CR1_OPM;
+    tim->CR1 |= TIM_CR1_OPM;
 
     /* Update interrupt enabled */
-    TIM2->DIER |= TIM_DIER_UIE;
+    tim->DIER |= TIM_DIER_UIE;
 
     NVIC_EnableIRQ(TIM2_IRQn);
     NVIC_SetPriority(TIM2_IRQn, 1);
 }
 
-static void DebounceTimerStart(void)
+static void DebounceTimerStart(TIM_TypeDef* const tim)
 {
-    TIM2->CNT = 0;
+    tim->CNT = 0;
 
     /* Counter enabled */
-    TIM2->CR1 |= TIM_CR1_CEN;
+    tim->CR1 |= TIM_CR1_CEN;
 }
 
 void TIM2_IRQHandler(void)
