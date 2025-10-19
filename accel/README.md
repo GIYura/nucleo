@@ -1,19 +1,33 @@
 ### Description
 
-Accelerometer (ADXL345)
+Demo project to demonstrate communication with accelerometer over SPI/I2C.
 
 ### Set up
 
 Target: NUCLEO-F411RE
+Accelerometer: ADXL345
 
-### Connection 
+### SPI Connection 
+
+**NOTE:** SPI1 example
 
 | Nucleo pin   | GPIO        | Accel pin    |
 |--------------|-------------|--------------|
 | CN10 (11)    | PA5 (sck)   | SCL          |
 | CN10 (13)    | PA6 (miso)  | SDO          |
 | CN10 (15)    | PA7 (mosi)  | SDA          |
-| CN7 (26)     | PA0 (cs)    | CS           |
+| CN7 (28)     | PA0 (cs)    | CS           |
+
+### I2C Connection 
+
+**NOTE:** I2C1 example
+
+| Nucleo pin   | GPIO        | Accel pin    |
+|--------------|-------------|--------------|
+| CN10 (3)     | PB8 (scl)   | SCL          |
+| CN10 (5)     | PB9 (sda)   | SDA          |
+
+**NOTE:** I2C connection requires: CS->VCC; SDO->GND (accel address 53h)
 
 ### Get started
 
@@ -39,51 +53,4 @@ make
 ```
 make help
 ```
-
-### Debug
-
-In order to debug target run the following:
-
-```
-| Command                                 | Desription                |
-|-----------------------------------------|---------------------------|
-| make ocd                                | run open ocd server       |
-| make gdb                                | run gdb client            |
-| target remote localhost:3333            | connect to the target     |
-| monitor reset init                      | reset the target          |
-| monitor flash write_image erase </.elf> | flash target with .elf    |
-| monitor reset halt                      | reset and halt the target |
-| monitor resume                          | run the target            |
-| monitor halt                            | stop the target           |  
-```
-
-### Eclipse integration
-
-1. Run Eclipse
-
-2. Create new empty project
-
-3. Import source files
-
-4. Project->Propeties->C/C++ Build edit:
-- Build command: make
-- Build directory: specify path the makefile
-
-5. Run->Debug Configuration:
-- Project: specify a name
-- C/C++ Application: specify path to .elf
-
-6. Debugger:
-- GDB command: specify path to gdb client
-- Select Use remote target
-- Debug server: Generic TCP/IP
-- Protocol: remote
-- Connection: localhost:3333
-
-7. Startup
-- Initialization commands: monitor reset halt
-- Set breakpoint at: main
-- Select Resume
-
-8. Select Debug (F11)
 
