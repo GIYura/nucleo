@@ -1,5 +1,5 @@
 ### Description
 
-Memory alignment investifation.
+Memory alignment demo.
 
 
