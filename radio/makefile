@@ -69,6 +69,7 @@ DIRS = $(STM32_DRIVERS)/CMSIS/Device/ST/STM32F4xx/Include \
        $(SUBMODULES)/spi \
        $(SUBMODULES)/utils \
        $(SUBMODULES)/sx126x \
+       $(SUBMODULES)/radio \
        $(SUBMODULES)/assert \
        $(SUBMODULES)/buffer \
        $(SUBMODULES)/event \
@@ -109,7 +110,7 @@ OPT = -O0
 DEFINES = -DNDEBUG=1 \
           -D$(MCU)
           
-RADIO = adxl345
+RADIO = sx126x
 TARGET = $(BUILD)/$(RADIO)
 EXEC = $(TARGET).elf
 RM = rm -rf
