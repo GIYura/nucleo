@@ -1,3 +1,5 @@
+#include <stddef.h>
+
 #include "logger.h"
 
 static void AppEnterLowPowerMode(void)
@@ -10,18 +12,20 @@ static void AppEnterLowPowerMode(void)
 
     while (1);
 
-    /*TODO:*/
+/* NOTE: enter low power mode */
     /*__WFI();*/
 }
 
 int main(void)
 {
     LogInit();
-    LogLevel(LOG_LEVEL_ERROR);
 
     while (1)
     {
+        LogLevel(LOG_LEVEL_WARN);
         LogPrint("%d %u %x %c %s", -15, 17, 10, 'B', "FAIL");
+
+        LogLevel(LOG_LEVEL_DEBUG);
         LogPrint("%d %u %x %c %s", -122, 1700, 1000, 'A', "OK");
 
         AppEnterLowPowerMode();
