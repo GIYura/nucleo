@@ -1,6 +1,10 @@
 #include <stddef.h>
 
 #include "logger.h"
+#include "cli.h"
+#include "cli-commands.h"
+#include "uart-service.h"
+#include "delay.h"
 
 static void AppEnterLowPowerMode(void)
 {
@@ -12,23 +16,24 @@ static void AppEnterLowPowerMode(void)
 
     while (1);
 
-/* NOTE: enter low power mode */
+    /*TODO:*/
     /*__WFI();*/
 }
 
 int main(void)
 {
-    LogInit();
+    UartServiceInit();
+
+    CliInit();
+    CliCommandsInit();
+
+    LogLevel(LOG_LEVEL_DEBUG);
+
+    LogPrint("%s", "CLI ready. Type 'help' for list of commands\r\n");
 
     while (1)
     {
-        LogLevel(LOG_LEVEL_WARN);
-        LogPrint("%d %u %x %c %s", -15, 17, 10, 'B', "FAIL");
 
-        LogLevel(LOG_LEVEL_DEBUG);
-        LogPrint("%d %u %x %c %s", -122, 1700, 1000, 'A', "OK");
-
-        AppEnterLowPowerMode();
     }
 
     return 0;
