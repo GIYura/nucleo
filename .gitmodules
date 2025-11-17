@@ -19,3 +19,6 @@
 [submodule "radio/submodules"]
 	path = radio/submodules
 	url = git@github.com:GIYura/nucleo-shared.git
+[submodule "network/submodules"]
+	path = network/submodules
+	url = git@github.com:GIYura/nucleo-shared.git

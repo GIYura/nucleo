@@ -1,0 +1,9 @@
+# local config
+.config
+
+Build/
+Obj/
+docs/
+logs/
+
+*.txt
