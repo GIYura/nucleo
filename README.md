@@ -22,6 +22,7 @@ Peripheral drivers are stored in a shared submodule:
 | pwm             | PWM generation using TIM1               |                  |
 | scripts         | Read option bytes                       |                  |
 | serial          | UART logger                             |                  |
+| network         | WI-FI demo (ESP8266)                    |                  |
 
 ### Build and Run
 
