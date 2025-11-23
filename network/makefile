@@ -25,6 +25,32 @@ STM32_DRIVERS = $(SDK_PATH)/Drivers
 SRCDIR = src
 
 #######################
+# Target platform
+#######################
+PLATFORM ?= 
+
+SUPPORTED_PLATFORMS := stm32f4xx cc3220 atmega328
+IGNORE_PLATFORM_FOR := clean help ocd gdb flash debug
+
+ifeq ($(MAKECMDGOALS),)
+    EFFECTIVE_GOAL := all
+else
+    EFFECTIVE_GOAL := $(MAKECMDGOALS)
+endif
+
+ifeq (,$(filter $(EFFECTIVE_GOAL),$(IGNORE_PLATFORM_FOR)))
+
+    ifeq ($(PLATFORM),)
+        $(error PLATFORM is not set. Usage: make PLATFORM=<stm32f4xx|cc3220|atmega328>)
+    endif
+
+    ifeq (,$(filter $(PLATFORM),$(SUPPORTED_PLATFORMS)))
+        $(error Unsupported PLATFORM '$(PLATFORM)'. Supported: $(SUPPORTED_PLATFORMS))
+    endif
+
+endif
+
+#######################
 # Linker script path
 #######################
 LINKER_SCRIPT = $(SRCDIR)/hal/stm32f4xx/stm32f411retx_flash.ld
@@ -64,12 +90,12 @@ DIRS = $(STM32_DRIVERS)/CMSIS/Device/ST/STM32F4xx/Include \
        $(STM32_DRIVERS)/CMSIS/Include \
        $(SRCDIR) \
        $(SRCDIR)/hal/stm32f4xx \
+       $(SUBMODULES)/core/assert \
        $(SUBMODULES)/delay \
-       $(SUBMODULES)/gpio \
-       $(SUBMODULES)/uart \
-       $(SUBMODULES)/esp8266 \
+       $(SUBMODULES)/hal/include \
+       $(SUBMODULES)/platforms/$(PLATFORM) \
+       $(SUBMODULES)/lib/drivers/esp8266 \
        $(SUBMODULES)/utils \
-       $(SUBMODULES)/assert \
        $(SUBMODULES)/buffer \
        $(SUBMODULES)/event \
        
