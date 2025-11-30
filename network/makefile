@@ -1,9 +1,5 @@
 ##############################################
-# Makefile to ESP8266 control
-# Define GCC_PATH (e.g. GCC_PATH=/path/to/gcc/bin) to set compiler path
-# Define SMT32 SDK path (e.g. SDK_PATH=/path/to/stm32/sdk)
-# Define Open OCD path (e.g. OCD_PATH=/path/to/openocd/)
-# Define board config. file (used by OCD)
+# Multi-Platform Build
 ##############################################
 
 # Check if .config file is present and print error if not
@@ -21,7 +17,6 @@ endif
 # Source directory
 #######################
 SUBMODULES = submodules
-STM32_DRIVERS = $(SDK_PATH)/Drivers
 SRCDIR = src
 
 #######################
@@ -29,19 +24,20 @@ SRCDIR = src
 #######################
 PLATFORM ?= 
 
-SUPPORTED_PLATFORMS := stm32f4xx cc3220 atmega328
-IGNORE_PLATFORM_FOR := clean help ocd gdb flash debug
+SUPPORTED_PLATFORMS := stm32f4xx cc32xx atmega328
+IGNORE_GOAL := clean help ocd gdb flash debug
 
 ifeq ($(MAKECMDGOALS),)
-    EFFECTIVE_GOAL := all
+    GOAL := all
 else
-    EFFECTIVE_GOAL := $(MAKECMDGOALS)
+    GOAL := $(MAKECMDGOALS)
 endif
 
-ifeq (,$(filter $(EFFECTIVE_GOAL),$(IGNORE_PLATFORM_FOR)))
+ifeq (,$(filter $(GOAL),$(IGNORE_GOAL)))
 
     ifeq ($(PLATFORM),)
-        $(error PLATFORM is not set. Usage: make PLATFORM=<stm32f4xx|cc3220|atmega328>)
+        $(info Supported platforms: $(SUPPORTED_PLATFORMS))
+        $(error PLATFORM is undefined. Usage: make PLATFORM=$(SUPPORTED_PLATFORMS))
     endif
 
     ifeq (,$(filter $(PLATFORM),$(SUPPORTED_PLATFORMS)))
@@ -50,10 +46,14 @@ ifeq (,$(filter $(EFFECTIVE_GOAL),$(IGNORE_PLATFORM_FOR)))
 
 endif
 
-#######################
-# Linker script path
-#######################
-LINKER_SCRIPT = $(SRCDIR)/hal/stm32f4xx/stm32f411retx_flash.ld
+#############################################
+# Load platform-specific configuration
+#############################################
+.DEFAULT_GOAL := all
+
+ifneq ($(PLATFORM),)
+    include $(SUBMODULES)/platforms/config/$(PLATFORM).mk
+endif
 
 #######################
 # Output directory
@@ -64,11 +64,10 @@ BUILD = Build
 #######################
 # Binary
 #######################
-PREFIX = arm-none-eabi-
-CC = $(GCC_PATH)/$(PREFIX)gcc
-AS = $(GCC_PATH)/$(PREFIX)gcc -x assembler-with-cpp
-CP = $(GCC_PATH)/$(PREFIX)objcopy
-SZ = $(GCC_PATH)/$(PREFIX)size
+CC = $(GCC_PATH)/$(TOOLCHAIN_PREFIX)gcc
+AS = $(GCC_PATH)/$(TOOLCHAIN_PREFIX)gcc -x assembler-with-cpp
+CP = $(GCC_PATH)/$(TOOLCHAIN_PREFIX)objcopy
+SZ = $(GCC_PATH)/$(TOOLCHAIN_PREFIX)size
 
 #######################
 # CFLAGS
@@ -83,21 +82,17 @@ CFLAGS = -mcpu=$(CPU) \
          -ffunction-sections \
          -fdata-sections
 
-#######################
-# List of directories
-#######################
-DIRS = $(STM32_DRIVERS)/CMSIS/Device/ST/STM32F4xx/Include \
-       $(STM32_DRIVERS)/CMSIS/Include \
-       $(SRCDIR) \
-       $(SRCDIR)/hal/stm32f4xx \
-       $(SUBMODULES)/core/assert \
-       $(SUBMODULES)/delay \
-       $(SUBMODULES)/hal/include \
-       $(SUBMODULES)/platforms/$(PLATFORM) \
-       $(SUBMODULES)/lib/drivers/esp8266 \
-       $(SUBMODULES)/utils \
-       $(SUBMODULES)/buffer \
-       $(SUBMODULES)/event \
+DIRS = \
+    $(SUBMODULES)/hal/include \
+    $(PLATFORM_DIRS) \
+    $(SRCDIR) \
+    $(PLATFORM_BOOT_DIR) \
+    $(SUBMODULES)/core/assert 
+    #$(SUBMODULES)/delay \
+    #$(SUBMODULES)/lib/drivers/esp8266 \
+    #$(SUBMODULES)/utils \
+    #$(SUBMODULES)/buffer \
+    #$(SUBMODULES)/event
        
 #######################
 # List of source files (.c)
@@ -128,15 +123,11 @@ OBJS = $(COBJS) $(ASMOBJS)
 #######################
 # Variables
 #######################
-CPU = cortex-m4
-MCU = STM32F411xE
 STANDARD = c99
 OPT = -O0
-DEFINES = -DNDEBUG=1 \
-          -D$(MCU)
-          
-ESP = esp
-TARGET = $(BUILD)/$(ESP)
+DEFINES += -DNDEBUG=1
+APPLICATION = esp
+TARGET = $(BUILD)/$(PLATFORM)-$(APPLICATION)
 EXEC = $(TARGET).elf
 RM = rm -rf
 
@@ -190,27 +181,19 @@ clean: ## 'clean'
 	@echo 'Cleaning...Done!'
 	@$(RM) $(OBJDIR) $(BUILD)
 
-# Run open OCD server
-ocd: ## Run 'ocd' server
-	@echo 'OCD running!'
-	$(OCD_PATH)/openocd -f $(BOARD_CFG)
-
 # Run GDB client
-gdb: ## Debug over 'gdb'
+debug: ## Debug over 'gdb'
 	@echo 'GDB running!'
-	$(GCC_PATH)/$(PREFIX)gdb $(TARGET).elf
-
-# Load .bin to the target
-flash: $(TARGET).bin ## 'flash' .bin to target over st-link
-	@echo 'Flash running!'
-	st-flash write $(TARGET).bin 0x8000000
+	$(GCC_PATH)/$(TOOLCHAIN_PREFIX)gdb $(TARGET).elf
 	
-help: ## 'help'
-	@echo 'Available targets:'
-	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
+help:
+	@echo "Common targets: clean, all, debug"
+ifneq ($(PLATFORM),)
+	@$(MAKE) --no-print-directory help-$(PLATFORM)
+endif
 
 #debug:
-#	@echo $(GCC_PATH)/$(PREFIX)gdb
+#	@echo $(GCC_PATH)/$(TOOLCHAIN_PREFIX)gdb
 #	@echo 'DIR:' $(DIRS)
 #	@echo 'SRC:' $(SRC)
 #	@echo 'INC:' $(INC)
