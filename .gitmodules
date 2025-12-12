@@ -1,24 +1,24 @@
 [submodule "led/submodules"]
 	path = led/submodules
-	url = git@github.com:GIYura/nucleo-shared.git
+	url = git@github.com:GIYura/uSDK.git
 [submodule "button/submodules"]
 	path = button/submodules
-	url = git@github.com:GIYura/nucleo-shared.git
+	url = git@github.com:GIYura/uSDK.git
 [submodule "serial/submodules"]
 	path = serial/submodules
-	url = git@github.com:GIYura/nucleo-shared.git
+	url = git@github.com:GIYura/uSDK.git
 [submodule "accel/submodules"]
 	path = accel/submodules
-	url = git@github.com:GIYura/nucleo-shared.git
+	url = git@github.com:GIYura/uSDK.git
 [submodule "blinky-os/submodules"]
 	path = blinky-os/submodules
-	url = git@github.com:GIYura/nucleo-shared.git
+	url = git@github.com:GIYura/uSDK.git
 [submodule "button-os/submodules"]
 	path = button-os/submodules
-	url = git@github.com:GIYura/nucleo-shared.git
+	url = git@github.com:GIYura/uSDK.git
 [submodule "radio/submodules"]
 	path = radio/submodules
-	url = git@github.com:GIYura/nucleo-shared.git
+	url = git@github.com:GIYura/uSDK.git
 [submodule "network/submodules"]
 	path = network/submodules
-	url = git@github.com:GIYura/nucleo-shared.git
+	url = git@github.com:GIYura/uSDK.git
