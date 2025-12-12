@@ -4,7 +4,7 @@ This repository contains a collection of educational and experimental projects f
 Each project demonstrates the use of low-level, CMSIS-based peripheral drivers — implemented without HAL or LL — to better understand how STM32 hardware works “under the hood.”
 
 Peripheral drivers are stored in a shared submodule:
-[here](https://github.com/GIYura/nucleo-shared)
+[here](https://github.com/GIYura/uSDK.git)
 
 ### Repository Structure
 
@@ -36,14 +36,7 @@ SDK: STM32CubeF4 (CMSIS + device headers)
 
 Board: Nucleo-F411RE
 
-**NOTE:** Ensure environment variables are set in **.config** (see **default.config** as a template):
-
-```
-GCC_PATH=<path-to->/gcc-arm-none-eabi/bin
-SDK_PATH=<path-to->/STM32Cube_FW_F4_Vx.x.x
-OCD_PATH=<path-to->/openocd/bin
-BOARD_CFG=<path-to->/openocd/scripts/board/st_nucleo_f4.cfg
-```
+STM32F4 MCU Package: [here](https://www.st.com/en/embedded-software/stm32cubef4.html)
 
 ### Build the project
 
@@ -68,14 +61,12 @@ git submodule update --init --recursive
 4. Build the project:
 
 ```
-make
+./scripts/build
 ```
 
-5. To see all available build targets:
+5. Select desired target.
 
-```
-make help
-```
+6. Follow the instructions
 
 ### Eclipse integration
 
