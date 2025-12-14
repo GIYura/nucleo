@@ -87,13 +87,9 @@ DIRS = \
     $(PLATFORM_DIRS) \
     $(SRCDIR) \
     $(PLATFORM_BOOT) \
-    $(SUBMODULES)/core/assert 
-    #$(SUBMODULES)/delay \
-    #$(SUBMODULES)/lib/drivers/esp8266 \
-    #$(SUBMODULES)/utils \
-    #$(SUBMODULES)/buffer \
-    #$(SUBMODULES)/event
-       
+    $(SUBMODULES)/core/assert \
+    $(SUBMODULES)/lib/drivers/led
+
 ##############################################
 # List of source files (.c)
 ##############################################

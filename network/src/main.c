@@ -1,8 +1,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "gpio.h"
-#include "gpio-name.h"
+#include "led.h"
+#include "board.h"
 
 #if 0
 typedef enum
@@ -17,9 +17,6 @@ typedef enum
 } ESP_STATE;
 
 static ESP_STATE m_state = ESP_STATE_IDLE;
-
-static Gpio_t m_gpioLedGreen;
-static Gpio_t m_gpioLedYellow;
 
 static void OnEspResponse(ESP_RESPONSE response)
 {
@@ -52,51 +49,37 @@ static void OnEspResponse(ESP_RESPONSE response)
 }
 #endif
 
-extern const GpioOps_t g_GpioOps;
-
-static GpioHandle_t m_ledGreen = { .ops = &g_GpioOps };
-static GpioHandle_t m_ledYellow = { .ops = &g_GpioOps };
-static GpioHandle_t m_ledRed = { .ops = &g_GpioOps };
-
-static GpioHandle_t m_ledGreenExt = { .ops = &g_GpioOps };
-
-static uint32_t m_counter = 1;
-
 int main (void)
 {
-#if 0
-    m_ledGreen.ops->open(&m_ledGreen, PA_5, PIN_MODE_OUTPUT, PIN_TYPE_NO_PULL, PIN_STRENGTH_HIGH, PIN_CONFIG_PUSH_PULL, PIN_STATE_LOW);
-    m_ledYellow.ops->open(&m_ledYellow, PC_3, PIN_MODE_OUTPUT, PIN_TYPE_NO_PULL, PIN_STRENGTH_HIGH, PIN_CONFIG_PUSH_PULL, PIN_STATE_LOW);
+    Board_Init();
+
+#if defined (PLATFORM_STM32F4)
+    Led_t* ledWhite = Board_GetLed(BOARD_LED_WHITE);
+#endif
+
+#if defined (PLATFORM_CC3220)
+    Led_t* ledGreenExt = Board_GetLed(BOARD_LED_GREEN_EXT);
+    Led_t* ledRed = Board_GetLed(BOARD_LED_RED);
+#endif
+
+    Led_t* ledGreen = Board_GetLed(BOARD_LED_GREEN);
+    Led_t* ledYellow = Board_GetLed(BOARD_LED_YELLOW);
 
     while (1)
     {
-        m_ledGreen.ops->toggle(&m_ledGreen);
-        m_ledYellow.ops->toggle(&m_ledYellow);
+#if defined (PLATFORM_STM32F4)
+        LedToggle(ledWhite);
+#endif
+
+#if defined (PLATFORM_CC3220)
+        LedToggle(ledGreenExt);
+        LedToggle(ledRed);
+#endif
+        LedToggle(ledGreen);
+        LedToggle(ledYellow);
 
         for(int i = 0; i < 100000; i++);
     }
-#endif
-
-#if 1
-    m_ledGreen.ops->open(&m_ledGreen, PIN_GPIOA1_3, PIN_MODE_OUTPUT, PIN_TYPE_NO_PULL, PIN_STRENGTH_HIGH, PIN_CONFIG_PUSH_PULL, 0);
-    m_ledYellow.ops->open(&m_ledYellow, PIN_GPIOA1_2, PIN_MODE_OUTPUT, PIN_TYPE_NO_PULL, PIN_STRENGTH_HIGH, PIN_CONFIG_PUSH_PULL, 0);
-    m_ledRed.ops->open(&m_ledRed, PIN_GPIOA1_1, PIN_MODE_OUTPUT, PIN_TYPE_NO_PULL, PIN_STRENGTH_HIGH, PIN_CONFIG_PUSH_PULL, 0);
-
-    m_ledGreenExt.ops->open(&m_ledGreenExt, PIN_GPIOA2_1, PIN_MODE_OUTPUT, PIN_TYPE_NO_PULL, PIN_STRENGTH_HIGH, PIN_CONFIG_PUSH_PULL, 0);
-
-    while (1)
-    {
-        m_counter++;
-
-        m_ledGreen.ops->toggle(&m_ledGreen);
-        m_ledYellow.ops->toggle(&m_ledYellow);
-        m_ledRed.ops->toggle(&m_ledRed);
-
-        m_ledGreenExt.ops->toggle(&m_ledGreenExt);
-
-        for(int i = 0; i < 500000; i++);
-    }
-#endif
 
 #if 0
     EventQueueInit();
