@@ -78,7 +78,7 @@ echo ""
 # ====================== BUILD OPTION =====================
 read -p "Create new build? (y/n): " choice
 if [[ "$choice" == "y" ]]; then
-    $MAKE_CMD PLATFORM="$PLATFORM"
+    $MAKE_CMD PLATFORM="$PLATFORM" -j$(nproc)
     echo ""
 else
     echo -e "${YELLOW}Build skipped.${RESET}"
