@@ -20,7 +20,7 @@ echo -e "${CYAN}${BOLD}======================================${RESET}"
 echo ""
 
 MAKE_CMD="make"
-PLATFORMS=("stm32f4xx" "cc32xx")
+PLATFORMS=("stm32f4xx" "cc32xx" "nrf52")
 
 # ======================= OPENOCD ==========================
 OPENOCD_BIN=/opt/openocd/bin/openocd

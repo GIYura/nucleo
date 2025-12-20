@@ -18,7 +18,7 @@ SRCDIR = src
 ##############################################
 PLATFORM ?= 
 
-SUPPORTED_PLATFORMS := stm32f4xx cc32xx atmega328
+SUPPORTED_PLATFORMS := stm32f4xx cc32xx nrf52
 IGNORE_GOAL := clean help ocd gdb flash debug
 
 ifeq ($(MAKECMDGOALS),)
@@ -148,7 +148,6 @@ $(EXEC): $(OBJS)
 	@echo 'Linking the target $@'
 	@echo '============='
 	@mkdir -p $(BUILD)
-#$(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) $(LIB) -o $@
 	$(CC) $(OBJS) $(LDFLAGS) $(LIB) -o $@
 	@echo 'Linking Successful !!!'
 
@@ -185,6 +184,3 @@ ifneq ($(PLATFORM),)
 	@$(MAKE) --no-print-directory help-$(PLATFORM)
 endif
 
-#debug:
-#	@echo $(LINKER_SCRIPT)
-#	@echo $(PLATFORM_BOOT_DIR)
